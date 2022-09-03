@@ -2,4 +2,13 @@
 
 == 0.0.0 (2022-09-05)
 
-* Added initial implementation.
+* Added actuator - Brooke Kuhlmann
+* Added code quality configurations - Brooke Kuhlmann
+* Added constructor - Brooke Kuhlmann
+* Added dependency map - Brooke Kuhlmann
+* Added documentation - Brooke Kuhlmann
+* Added errors - Brooke Kuhlmann
+* Added import functionality - Brooke Kuhlmann
+* Added project skeleton - Brooke Kuhlmann
+* Added stub refinement - Brooke Kuhlmann
+* Updated gem dependencies - Brooke Kuhlmann

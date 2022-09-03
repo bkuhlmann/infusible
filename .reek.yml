@@ -1,3 +1,15 @@
 exclude_paths:
   - tmp
   - vendor
+
+detectors:
+  NestedIterators:
+    exclude:
+      - "Infusible::Constructor#define_initialize_with_keywords"
+      - "Infusible::Constructor#define_initialize_with_positionals"
+      - "Infusible::Constructor#define_new"
+
+directories:
+  "spec/lib/infusible":
+    LongParameterList:
+      enabled: false

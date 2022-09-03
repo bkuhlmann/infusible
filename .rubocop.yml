@@ -1,2 +1,14 @@
 inherit_gem:
   caliber: config/all.yml
+
+Lint/UselessMethodDefinition:
+  Exclude:
+    - "spec/lib/infusible/constructor_spec.rb"
+
+Metrics/ParameterLists:
+  Exclude:
+    - "spec/lib/infusible/constructor_spec.rb"
+
+Naming/VariableNumber:
+  Exclude:
+    - "spec/lib/infusible/dependency_map_spec.rb"

@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: Please use the following metadata when citing this project in your work.
+title: Infusible
+abstract: Automates the injection of dependencies into your class.
+version: 0.0.0
+license: Hippocratic-2.1
+date-released: 2022-09-05
+authors:
+  - family-names: Kuhlmann
+    given-names: Brooke
+    affiliation: Alchemists
+    orcid: https://orcid.org/0000-0002-5810-6268
+keywords:
+ - ruby
+ - dependency injection
+repository-code: https://github.com/bkuhlmann/infusible
+repository-artifact: https://rubygems.org/gems/infusible

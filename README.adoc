@@ -300,7 +300,7 @@ end
 # Our import which defines our container for potential injection.
 Import = Infusible.with Container
 
-# Our action class which uses Auto Injector to inject our kernel dependency from our container.
+# Our action class which injects our kernel dependency from our container.
 class Action
   include Import[:kernel]
 

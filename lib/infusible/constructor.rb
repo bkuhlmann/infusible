@@ -5,6 +5,16 @@ require "marameters"
 module Infusible
   # Provides the automatic and complete resolution of all injected dependencies.
   class Constructor < Module
+    def self.define_instance_variables target, names, keywords
+      names.each do |name|
+        next unless keywords.key?(name) || !target.instance_variable_defined?(:"@#{name}")
+
+        target.instance_variable_set :"@#{name}", keywords[name]
+      end
+    end
+
+    private_class_method :define_instance_variables
+
     def initialize container, *configuration
       super()
 
@@ -45,17 +55,19 @@ module Infusible
         break instance unless instance.only_bare_splats?
       end
 
+      variablizer = self.class.method :define_instance_variables
+
       if super_parameters.positionals? || super_parameters.only_single_splats?
-        define_initialize_with_positionals super_parameters
+        define_initialize_with_positionals super_parameters, variablizer
       else
-        define_initialize_with_keywords super_parameters
+        define_initialize_with_keywords super_parameters, variablizer
       end
     end
 
-    def define_initialize_with_positionals super_parameters
-      instance_module.class_exec dependencies.names, method(:define_variables) do |names, definer|
+    def define_initialize_with_positionals super_parameters, variablizer
+      instance_module.class_exec dependencies.names, variablizer do |names, definer|
         define_method :initialize do |*positionals, **keywords, &block|
-          definer.call self, keywords
+          definer.call self, names, keywords
 
           if super_parameters.only_single_splats?
             super(*positionals, **keywords, &block)
@@ -66,21 +78,12 @@ module Infusible
       end
     end
 
-    def define_initialize_with_keywords super_parameters
-      instance_module.class_exec dependencies.names, method(:define_variables) do |names, definer|
+    def define_initialize_with_keywords super_parameters, variablizer
+      instance_module.class_exec dependencies.names, variablizer do |names, definer|
         define_method :initialize do |**keywords, &block|
-          definer.call self, keywords
+          definer.call self, names, keywords
           super(**super_parameters.keyword_slice(keywords, keys: names), &block)
         end
-      end
-    end
-
-    # :reek:FeatureEnvy
-    def define_variables target, keywords
-      dependencies.names.each do |name|
-        next unless keywords.key?(name) || !target.instance_variable_defined?(:"@#{name}")
-
-        target.instance_variable_set :"@#{name}", keywords[name]
       end
     end
 

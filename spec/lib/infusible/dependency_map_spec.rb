@@ -16,11 +16,11 @@ RSpec.describe Infusible::DependencyMap do
   end
 
   describe "#to_h" do
-    context "with names (strings and symbols)" do
-      let(:configuration) { [:a, "b"] }
+    context "with names (symbols, strings, and underscores)" do
+      let(:configuration) { [:a, "b", :c_test] }
 
       it "answers symbolized keys with original values" do
-        expect(dependency_map.to_h).to eq(a: :a, b: "b")
+        expect(dependency_map.to_h).to eq(a: :a, b: "b", c_test: :c_test)
       end
     end
 
@@ -33,17 +33,10 @@ RSpec.describe Infusible::DependencyMap do
     end
 
     context "with namespaces" do
-      let(:configuration) { %w[n.a n-b n/c n!d n@e n*f] }
+      let(:configuration) { %w[n.a n.b n.m.c] }
 
       it "answers symbolized keys, stripped of namespace, with original values" do
-        expect(dependency_map.to_h).to eq(
-          a: "n.a",
-          b: "n-b",
-          c: "n/c",
-          d: "n!d",
-          e: "n@e",
-          f: "n*f"
-        )
+        expect(dependency_map.to_h).to eq(a: "n.a", b: "n.b", c: "n.m.c")
       end
     end
 
@@ -118,11 +111,11 @@ RSpec.describe Infusible::DependencyMap do
     end
 
     context "with name of special characters only" do
-      let(:configuration) { ["@!$%"] }
+      let(:configuration) { ["/@!$%\\"] }
 
       it "fails with duplicate name" do
         expectation = proc { dependency_map.to_h }
-        expect(&expectation).to raise_error(Infusible::Errors::InvalidDependency, /"@!\$%"/)
+        expect(&expectation).to raise_error(Infusible::Errors::InvalidDependency, %r("/@!\$%\\\\"))
       end
     end
   end

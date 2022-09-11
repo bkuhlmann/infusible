@@ -158,7 +158,7 @@ class Pinger
 end
 ----
 
-The namespace _and_ delimiter (i.e. `primary.`) will be removed so only `http` and `logger` are defined for use (as shown in the `#call` method).
+The namespace (i.e. `primary.`) _and_ delimiter (i.e. `.`) will be removed so only `http` and `logger` are defined for use (as shown in the `#call` method). Only dots (i.e. `.`) are allowed as the delimiter between namespace and dependency.
 
 ==== Aliases
 

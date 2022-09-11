@@ -3,12 +3,12 @@
 module Infusible
   # Sanitizes and resolves dependencies for use.
   class DependencyMap
-    NAME_PATTERN = /([a-z_][a-zA-Z_0-9]*)$/
+    PATTERNS = {name: /([a-z_][a-zA-Z_0-9]*)$/, valid: /^[\w.]+$/}.freeze
 
     attr_reader :names
 
-    def initialize *configuration, name_pattern: NAME_PATTERN
-      @name_pattern = name_pattern
+    def initialize *configuration, patterns: PATTERNS
+      @patterns = patterns
       @collection = {}
 
       configuration = configuration.dup
@@ -24,10 +24,14 @@ module Infusible
 
     private
 
-    attr_reader :name_pattern, :collection
+    attr_reader :patterns, :collection
 
     def to_name identifier
-      identifier.to_s[name_pattern] || fail(Errors::InvalidDependency.new(identifier:))
+      name = identifier[patterns.fetch(:name)]
+
+      return name if name && name.match?(patterns.fetch(:valid))
+
+      fail(Errors::InvalidDependency.new(identifier:))
     end
 
     def add name, identifier

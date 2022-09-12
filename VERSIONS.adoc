@@ -1,5 +1,11 @@
 = Versions
 
+== 0.1.0 (2022-09-12)
+
+* Fixed constructor instance variable definer - Brooke Kuhlmann
+* Fixed dependency map namespaces delimited with special characters - Brooke Kuhlmann
+* Fixed documentation - Brooke Kuhlmann
+
 == 0.0.0 (2022-09-05)
 
 * Added actuator - Brooke Kuhlmann

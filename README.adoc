@@ -389,7 +389,25 @@ end
 
 ⚠️ I mention `around` block support last because the caveat is that you can't use an `around` block with any RSpec test double since link:https://github.com/rspec/rspec-mocks/issues/1283[RSpec can't guarantee proper cleanup]. This is why the RSpec `before` and `after` blocks were used to guarantee proper setup and teardown. That said, you can use _fakes_ or any object you own which _isn't_ a RSpec test double but provides the Object API you need for testing purposes.
 
-== Architecture
+== Development
+
+To contribute, run:
+
+[source,bash]
+----
+git clone https://github.com/bkuhlmann/infusible
+cd infusible
+bin/setup
+----
+
+You can also use the IRB console for direct access to all objects:
+
+[source,bash]
+----
+bin/console
+----
+
+=== Architecture
 
 This gem automates a lot of the boilerplate code you'd normally have to do manually by defining your constructor, initializer, and instance variables for you. Normally, when injecting dependencies, you'd do something like this (using the `Pinger` example provided earlier):
 
@@ -426,7 +444,7 @@ end
 
 Your constructor, initializer, and instance variables are all there. Only you don't have to write all of this yourself anymore. 🎉
 
-== Style Guide
+=== Style Guide
 
 When using this gem, along with a container like {dry-container_link}, make sure to adhere to the following guidelines:
 
@@ -434,15 +452,6 @@ When using this gem, along with a container like {dry-container_link}, make sure
 * Use containers that don't have a lot of registered dependencies. If you register too many dependencies, then that means your objects are too complex and need to be simplified further.
 * Use the `Import` constant to define _what_ is possible to import much like you'd use a `Container` to define your dependencies. Defining what is importable improves performance and should be defined in separate files for improved fuzzy file finding.
 * Use `**dependencies` as your named double splat argument when defining an initializer which needs to pass injected dependencies upwards. This improves readability and consistency by clearly identifying your injected dependencies.
-
-== Development
-
-You can also use the IRB console for direct access to all objects:
-
-[source,bash]
-----
-bin/console
-----
 
 == Tests
 

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "spec_helper"
 require "dry/container"
 require "dry/container/stub"
 require "infusible/stub"
+require "spec_helper"
 
 RSpec.describe Infusible::Stub do
   using described_class

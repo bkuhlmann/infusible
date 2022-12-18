@@ -195,7 +195,7 @@ RSpec.describe Infusible::Constructor do
 
     context "with multiple inheritance using unnamed single splat" do
       let :child do
-        mod = Module.new { def initialize(*) = super }
+        mod = Module.new { def initialize(*) = super() }
 
         Class.new do
           include mod

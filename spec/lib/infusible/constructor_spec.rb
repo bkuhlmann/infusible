@@ -39,9 +39,8 @@ RSpec.describe Infusible::Constructor do
         Class.new do
           include Test::Constructor
 
-          def initialize one, two = "two", *three, four:, five: 5, **dependencies, &six
-            super(**dependencies)
-
+          def initialize one, two = "two", *three, four:, five: 5, **, &six
+            super(**)
             @one = one
             @two = two
             @three = three
@@ -91,7 +90,7 @@ RSpec.describe Infusible::Constructor do
         Class.new parent do
           include Test::Constructor
 
-          def initialize one, two = "two", *three, four:, five: 5, **dependencies, &seven
+          def initialize one, two = "two", *three, four:, five: 5, **, &seven
             super
           end
 

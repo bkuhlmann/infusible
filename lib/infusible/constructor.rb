@@ -42,7 +42,7 @@ module Infusible
     end
 
     def define_new
-      class_module.class_exec container, dependencies.to_h do |container, collection|
+      class_module.module_exec container, dependencies.to_h do |container, collection|
         define_method :new do |*positionals, **keywords, &block|
           collection.each { |name, id| keywords[name] = container[id] unless keywords.key? name }
           super(*positionals, **keywords, &block)
@@ -65,7 +65,7 @@ module Infusible
     end
 
     def define_initialize_with_positionals super_parameters, variablizer
-      instance_module.class_exec dependencies.names, variablizer do |names, definer|
+      instance_module.module_exec dependencies.names, variablizer do |names, definer|
         define_method :initialize do |*positionals, **keywords, &block|
           definer.call self, names, keywords
 
@@ -79,7 +79,7 @@ module Infusible
     end
 
     def define_initialize_with_keywords super_parameters, variablizer
-      instance_module.class_exec dependencies.names, variablizer do |names, definer|
+      instance_module.module_exec dependencies.names, variablizer do |names, definer|
         define_method :initialize do |**keywords, &block|
           definer.call self, names, keywords
           super(**super_parameters.keyword_slice(keywords, keys: names), &block)
@@ -90,7 +90,7 @@ module Infusible
     def define_readers
       methods = dependencies.names.map { |name| ":#{name}" }
 
-      instance_module.class_eval <<-READERS, __FILE__, __LINE__ + 1
+      instance_module.module_eval <<-READERS, __FILE__, __LINE__ + 1
         private attr_reader #{methods.join ", "}
       READERS
     end

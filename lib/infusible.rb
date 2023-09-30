@@ -11,5 +11,7 @@ end
 
 # Main namespace.
 module Infusible
+  def self.loader(registry = Zeitwerk::Registry) = registry.loader_for __FILE__
+
   def self.with(container) = Actuator.new container
 end

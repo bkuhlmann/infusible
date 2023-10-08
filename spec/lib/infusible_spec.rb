@@ -3,17 +3,22 @@
 require "spec_helper"
 
 RSpec.describe Infusible do
-  subject(:infusible) { described_class.with Test::Container }
+  subject(:infusible) { described_class }
 
-  before do
-    stub_const "Test::Container", {a: 1, b: 2, c: 3}
-    stub_const "Test::Import", infusible
+  describe ".loader" do
+    it "answers loader" do
+      expect(infusible.loader).to have_attributes(tag: "infusible")
+    end
   end
 
   describe ".with" do
-    let(:child) { Class.new.include Test::Import[:a, :b, :c] }
+    before do
+      stub_const "Test::Container", {a: 1, b: 2, c: 3}
+      stub_const "Test::Import", infusible.with(Test::Container)
+    end
 
     it "answers injected dependencies" do
+      child = Class.new.include Test::Import[:a, :b, :c]
       expect(child.new.inspect).to include("@a=1, @b=2, @c=3")
     end
   end

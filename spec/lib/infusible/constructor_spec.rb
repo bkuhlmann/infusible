@@ -21,6 +21,49 @@ RSpec.describe Infusible::Constructor do
       end
     end
 
+    context "with private scope" do
+      let :child do
+        Class.new.include described_class.new({eins: 1, zwei: 2}, :eins, scope: :private)
+      end
+
+      it "fails when attempting to access private dependency" do
+        expectation = proc { child.new.eins }
+        expect(&expectation).to raise_error(NameError, /private method/)
+      end
+    end
+
+    context "with protected scope" do
+      let :child do
+        Class.new.include described_class.new({eins: 1, zwei: 2}, :eins, scope: :protected)
+      end
+
+      it "fails when attempting to access protected dependency" do
+        expectation = proc { child.new.eins }
+        expect(&expectation).to raise_error(NameError, /protected method/)
+      end
+    end
+
+    context "with public scope" do
+      let :child do
+        Class.new.include described_class.new({eins: 1, zwei: 2}, :eins, scope: :public)
+      end
+
+      it "answers dependency" do
+        expect(child.new.eins).to eq(1)
+      end
+    end
+
+    context "with invalid scope" do
+      let :child do
+        Class.new.include described_class.new({eins: 1, zwei: 2}, :eins, scope: :bogus)
+      end
+
+      it "fails when attempting to access private dependency" do
+        expectation = proc { child.new.eins }
+        expect(&expectation).to raise_error(NameError, /private method/)
+      end
+    end
+
     context "with partially injected dependencies" do
       let(:child) { Class.new.include described_class.new({eins: 1, zwei: 2}, :eins) }
 

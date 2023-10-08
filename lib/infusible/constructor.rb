@@ -4,6 +4,7 @@ require "marameters"
 
 module Infusible
   # Provides the automatic and complete resolution of all injected dependencies.
+  # :reek:TooManyInstanceVariables
   class Constructor < Module
     def self.define_instance_variables target, names, keywords
       names.each do |name|
@@ -15,11 +16,12 @@ module Infusible
 
     private_class_method :define_instance_variables
 
-    def initialize container, *configuration
+    def initialize container, *configuration, scope: :private
       super()
 
       @container = container
       @dependencies = DependencyMap.new(*configuration)
+      @scope = scope
       @class_module = Class.new(Module).new
       @instance_module = Class.new(Module).new
     end
@@ -33,7 +35,7 @@ module Infusible
 
     private
 
-    attr_reader :container, :dependencies, :class_module, :instance_module
+    attr_reader :container, :dependencies, :scope, :class_module, :instance_module
 
     def define klass
       define_new
@@ -89,9 +91,10 @@ module Infusible
 
     def define_readers
       methods = dependencies.names.map { |name| ":#{name}" }
+      computed_scope = METHOD_SCOPES.include?(scope) ? scope : :private
 
       instance_module.module_eval <<-READERS, __FILE__, __LINE__ + 1
-        private attr_reader #{methods.join ", "}
+        #{computed_scope} attr_reader #{methods.join ", "}
       READERS
     end
   end

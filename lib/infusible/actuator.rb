@@ -10,6 +10,10 @@ module Infusible
 
     def [](*configuration) = constructor.new container, *configuration
 
+    def public(*configuration) = constructor.new container, *configuration, scope: __method__
+
+    def protected(*configuration) = constructor.new container, *configuration, scope: __method__
+
     private
 
     attr_reader :container, :constructor

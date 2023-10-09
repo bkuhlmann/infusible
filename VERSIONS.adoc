@@ -1,5 +1,13 @@
 = Versions
 
+== 2.2.0 (2023-10-08)
+
+* Added actuator public and protected methods - Brooke Kuhlmann
+* Added constructor scope - Brooke Kuhlmann
+* Added import feature spec - Brooke Kuhlmann
+* Added method scopes constant - Brooke Kuhlmann
+* Refactored primary spec - Brooke Kuhlmann
+
 == 2.1.0 (2023-09-30)
 
 * Fixed RuboCop Packaging/BundlerSetupInTests issues - Brooke Kuhlmann

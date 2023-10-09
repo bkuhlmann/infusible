@@ -2,20 +2,15 @@
 :toclevels: 5
 :figure-caption!:
 
-:dry-auto_inject_link: link:https://dry-rb.org/gems/dry-auto_inject[Dry AutoInject]
+:dependency_injection_containers_link: link:https://alchemists.io/articles/dependency_injection_containers[Dependency Injection Containers]
 :dry-container_link: link:https://dry-rb.org/gems/dry-container[Dry Container]
 :http_link: link:https://github.com/httprb/http[HTTP]
 
 = Infusible
 
-Automatically infuses dependencies within your object through the use of advanced dependency injection. Dependency injection -- the _D_ in _SOLID_ design -- is a powerful way to compose complex architectures from small objects which have a single responsibility -- the _S_ in _SOLID_ design.
+Automatically injects dependencies within your object via the _Dependency Inversion Principle_ -- the _D_ in _SOLID_ design -- and is a powerful way to compose complex architectures from small objects which leverage the _Single Responsibility Principle_ -- the _S_ in _SOLID_ design.
 
-This gem is inspired by the {dry-auto_inject_link} gem. There are a few major differences between this gem and the original Dry AutoInject gem which are:
-
-* All injected dependencies are _private by default_ in order to not break encapsulation and a _major_ reason why this gem was created.
-* Uses keyword arguments only while the original Dry AutoInject gem supports positionals or hash arguments in addition to keyword arguments.
-
-The entire architecture centers on the injection of a _container_ of dependencies. A container can be any object that responds to the `#[]` message and pairs well with the {dry-container_link} gem but a primitive `Hash` works too. Here's a quick example of Infusible in action:
+This means -- when coupled with {dependency_injection_containers_link} as provided by the {dry-container_link} gem -- Infusible completes the second half of the _Dependency Inversion Principle_. Here's a quick example of Infusible in action:
 
 [source,ruby]
 ----
@@ -30,15 +25,14 @@ end
 puts Demo.new  # My injected dependencies are: 1, 2, and 3.
 ----
 
-By using _infusing_ dependencies into your object, you have the ability to define common dependencies that can be injected without having to do the manual setup normally required to define a constructor and set private instance variables.
+By _infusing_ dependencies into your object, you have the ability to define common dependencies that can be injected without the manual setup normally required to define a constructor, set private instance variables, and set private attribute readers.
 
 toc::[]
 
 == Features
 
-* Ensures injected dependencies are _private by default_.
-* Uses a slimmed down architecture with a strong focus on keyword arguments.
-* Built on top of the link:https://alchemists.io/projects/marameters[Marameters] gem.
+* Ensures injected dependencies are _private by default_ but has support for public and protected injection.
+* Built atop the link:https://alchemists.io/projects/marameters[Marameters] gem.
 
 == Requirements
 
@@ -146,7 +140,7 @@ Pinger.new.call "https://duckduckgo.com"
 
 === Advanced
 
-When injecting your dependencies you _must_ always define what dependencies you want to require. By default, none will be injected. The following will demonstrate multiple ways in which to manage the injection of your dependencies.
+When injecting your dependencies you _must_ always define what dependencies you want to require. By default, none will be injected. The following demonstrates multiple ways to manage the injection of your dependencies.
 
 ==== Keys
 
@@ -244,11 +238,11 @@ class Pinger
 end
 ----
 
-The above will ensure the logger gets passed upwards for _infusion_ and is accessible to your class as an HTTP dependency.
+The above will ensure the logger gets passed upwards to the superclass while remaining accessible by subclass.
 
 ==== Inheritance
 
-When using inheritance or multiple inheritance, the child class' dependencies will take precedence over the parent's dependencies as long as the keys are the same. Consider the following:
+When using inheritance (or multiple inheritance), the child class' dependencies will take precedence over the parent's dependencies as long as the keys are the same. Consider the following:
 
 [source,ruby]
 ----
@@ -280,7 +274,7 @@ class Child < Parent
 end
 ----
 
-Once again, the child's logger will take precedence over the what is provided by default by the parent. This also applies to multiple levels of inheritance or multiple inherited modules. Whichever is last, wins. Lastly, you can mix and match dependencies too:
+Once again, the child's logger will take precedence over the what is provided by default by the parent. This also applies to multiple levels of inheritance or multiple inherited modules. Whichever is last to be injected, wins. Lastly, you can mix and match dependencies too:
 
 [source,ruby]
 ----
@@ -297,11 +291,46 @@ With the above, the child class will have access to both the `logger` and `http`
 
 ⚠️ Be careful when using parent dependencies within your child classes since they are _private by default_. Even though you can reach them, they might change, which can break your downstream dependencies and probably should be avoided or at least defined as `protected` by your parent objects in order to avoid breaking your parent/child relationship.
 
+==== Scopes
+
+By default -- and in all of the examples shown so far -- your dependencies are private by default when injected but you can make them public or protected. Here's a quick guide:
+
+* `include Import[:logger]`: Injects a _private_ logger dependency.
+* `include Import.protected(logger)`: Injects a _protected_ logger dependency. Useful with inheritance and a subclass needs access to the dependency.
+* `include Import.public(:logger)`: Injects a _public_ logger dependency.
+
+There is no `+#private+` method since `#[]` does this for you and is the recommended practice. Use of `#public` and `+#protected+` should be uses sparingly or not at all if you can avoid it. Here's an example where public, protected, and private dependencies are injected:
+
+[source,ruby]
+----
+module Container
+  extend Dry::Container::Mixin
+
+  register(:one) { "One" }
+  register(:two) { "Two" }
+  register(:three) { "Three" }
+end
+
+Import = Infusible.with Container
+
+class Demo
+  include Import.public(:one)
+  include Import.protected(:two)
+  include Import[:three]
+end
+
+demo = Demo.new
+
+demo.one    # "One"
+demo.two    # NoMethodError: protected method.
+demo.three  # NoMethodError: private method.
+----
+
 === Tests
 
 As you architect your implementation, you'll want to test your injected dependencies. You'll also want to stub, mock, or spy on them as well. Testing support is built-in for you by only needing to require the stub refinement as provided by this gem. For demonstration purposes, I'm going to assume you are using RSpec but you can adapt for whatever testing framework you are using.
 
-Let's say you have the following implementation that combines both {dry-container_link} (or a primitve `Hash` would work too) and this gem:
+Let's say you have the following implementation that combines both {dry-container_link} (or a primitive `Hash` would work too) and this gem:
 
 [source,ruby]
 ----
@@ -467,6 +496,7 @@ When using this gem, along with a container like {dry-container_link}, make sure
 * Use containers that don't have a lot of registered dependencies. If you register too many dependencies, then that means your objects are too complex and need to be simplified further.
 * Use the `Import` constant to define _what_ is possible to import much like you'd use a `Container` to define your dependencies. Defining what is importable improves performance and should be defined in separate files for improved fuzzy file finding.
 * Use `**` to forward keyword arguments when defining an initializer which needs to pass injected dependencies upwards.
+* Prefer `Import#[]` over the use of `Import#public` and/or `Import#protected` as much as a possible since injected dependencies should be private, by default, in order to not break encapsulation. That said, there are times where making them public and/or protected can save you from writing more boilerplate code.
 
 == Tests
 

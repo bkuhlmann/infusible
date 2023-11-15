@@ -6,8 +6,13 @@ RSpec.describe Infusible do
   subject(:infusible) { described_class }
 
   describe ".loader" do
-    it "answers loader" do
-      expect(infusible.loader).to have_attributes(tag: "infusible")
+    it "eager loads" do
+      expectation = proc { described_class.loader.eager_load force: true }
+      expect(&expectation).not_to raise_error
+    end
+
+    it "answers unique tag" do
+      expect(described_class.loader.tag).to eq("infusible")
     end
   end
 

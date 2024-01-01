@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |spec|
   spec.name = "infusible"
-  spec.version = "2.2.1"
+  spec.version = "3.0.0"
   spec.authors = ["Brooke Kuhlmann"]
   spec.email = ["brooke@alchemists.io"]
   spec.homepage = "https://alchemists.io/projects/infusible"

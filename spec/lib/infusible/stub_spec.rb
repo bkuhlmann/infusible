@@ -29,13 +29,13 @@ RSpec.describe Infusible::Stub do
         stub_const "Test::Import", infusible
       end
 
-      it "answers stubbed dependencies with block" do
+      it "includes stubbed dependencies with block" do
         Test::Import.stub_with a: 100, b: 200, c: 300 do
           expect(child.new.inspect).to include("@a=100, @b=200, @c=300")
         end
       end
 
-      it "answers original dependencies without block" do
+      it "includes original dependencies without block" do
         Test::Import.stub_with a: 100, b: 200, c: 300
         expect(child.new.inspect).to include("@a=1, @b=2, @c=3")
       end
@@ -47,13 +47,13 @@ RSpec.describe Infusible::Stub do
         stub_const "Test::Import", infusible
       end
 
-      it "answers stubbed dependencies with block" do
+      it "includes stubbed dependencies with block" do
         Test::Import.stub_with a: 100, b: 200, c: 300 do
           expect(child.new.inspect).to include("@a=100, @b=200, @c=300")
         end
       end
 
-      it "answers original dependencies without block" do
+      it "includes original dependencies without block" do
         Test::Import.stub_with a: 100, b: 200, c: 300
         expect(child.new.inspect).to include("@a=1, @b=2, @c=3")
       end
@@ -67,7 +67,7 @@ RSpec.describe Infusible::Stub do
         stub_const "Test::Import", infusible
       end
 
-      it "answers stubbed dependencies" do
+      it "includes stubbed dependencies" do
         Test::Import.stub a: 100, b: 200, c: 300
         expect(child.new.inspect).to include("@a=100, @b=200, @c=300")
       end
@@ -79,7 +79,7 @@ RSpec.describe Infusible::Stub do
         stub_const "Test::Import", infusible
       end
 
-      it "answers stubbed dependencies" do
+      it "includes stubbed dependencies" do
         Test::Import.stub a: 100, b: 200, c: 300
         expect(child.new.inspect).to include("@a=100, @b=200, @c=300")
       end
@@ -95,7 +95,7 @@ RSpec.describe Infusible::Stub do
         Test::Import.stub a: 100, b: 200, c: 300
       end
 
-      it "answers original dependencies" do
+      it "includes original dependencies" do
         Test::Import.unstub :a, :b, :c
         expect(child.new.inspect).to include("@a=1, @b=2, @c=3")
       end
@@ -109,7 +109,7 @@ RSpec.describe Infusible::Stub do
         Test::Import.stub a: 100, b: 200, c: 300
       end
 
-      it "answers original dependencies" do
+      it "includes original dependencies" do
         Test::Import.unstub :a, :b, :c
         expect(child.new.inspect).to include("@a=1, @b=2, @c=3")
       end

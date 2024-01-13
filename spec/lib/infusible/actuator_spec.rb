@@ -22,7 +22,7 @@ RSpec.describe Infusible::Actuator do
 
       let(:child) { Class.new.include Test::Import[:a, :b, :c] }
 
-      it "answers injected dependencies" do
+      it "includes injected dependencies" do
         expect(child.new.inspect).to include("@a=1, @b=2, @c=3")
       end
     end
@@ -32,7 +32,7 @@ RSpec.describe Infusible::Actuator do
 
       let(:child) { Class.new.include Test::Import[:a, :b, :c] }
 
-      it "answers injected dependencies" do
+      it "includes injected dependencies" do
         expect(child.new.inspect).to include("@a=1, @b=2, @c=3")
       end
     end
@@ -70,7 +70,7 @@ RSpec.describe Infusible::Actuator do
       end
     end
 
-    it "answers injected dependencies" do
+    it "fails when accessing a protected method" do
       child = Class.new.include Test::Import.protected(:a)
       expectation = proc { child.new.a }
 

@@ -9,7 +9,7 @@ RSpec.describe Infusible::DependencyMap do
     context "with names, namespaces, and aliases" do
       let(:configuration) { [:a, "n.b", {demo: "test"}] }
 
-      it "answers names a symbols" do
+      it "answers names as symbols" do
         expect(dependency_map.names).to eq(%i[a b demo])
       end
 

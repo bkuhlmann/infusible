@@ -11,13 +11,12 @@ module Infusible
       @patterns = patterns
       @collection = {}
 
-      configuration = configuration.dup
       aliases = configuration.last.is_a?(Hash) ? configuration.pop : {}
 
       configuration.each { |identifier| add to_name(identifier), identifier }
       aliases.each { |name, identifier| add name, identifier }
 
-      @names = collection.keys
+      @names = collection.keys.freeze
     end
 
     def to_h = collection

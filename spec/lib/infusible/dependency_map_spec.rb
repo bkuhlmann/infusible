@@ -12,6 +12,10 @@ RSpec.describe Infusible::DependencyMap do
       it "answers names a symbols" do
         expect(dependency_map.names).to eq(%i[a b demo])
       end
+
+      it "is frozen" do
+        expect(dependency_map.names.frozen?).to be(true)
+      end
     end
   end
 

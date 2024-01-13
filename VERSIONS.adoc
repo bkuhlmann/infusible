@@ -1,5 +1,12 @@
 = Versions
 
+== 3.1.0 (2024-01-13)
+
+* ✅ Fixed spec description - Brooke Kuhlmann
+* 🟢 Added infused keys - Brooke Kuhlmann
+* 🔼 Updated to Git Lint 7.0.0 - Brooke Kuhlmann
+* ⛔️ Removed dependency map redundant duplication of configuration - Brooke Kuhlmann
+
 == 3.0.0 (2024-01-01)
 
 * Updated Circle CI step names - Brooke Kuhlmann

@@ -326,6 +326,40 @@ demo.two    # NoMethodError: protected method.
 demo.three  # NoMethodError: private method.
 ----
 
+==== Infused Keys
+
+You have access to the keys of all infused dependencies via the _private_ `infused_keys` method which can be powerful in metaprogramming situations. For example, consider the following, which calls all injected dependencies since they have the same Object API (i.e. `#call`):
+
+Example:
+
+[source,ruby]
+----
+module Container
+  extend Dry::Container::Mixin
+
+  register(:one, proc { puts "One" }, call: false)
+  register(:two, proc { puts "Two" }, call: false)
+end
+
+Import = Infusible.with Container
+
+class Demo
+  include Import[:one, :two]
+
+  def call = infused_keys.each { |key| __send__(key).call }
+end
+
+Demo.new.call
+# One
+# Two
+----
+
+As you can see, with the _private_ `#infused_keys` attribute reader, we were able to iterate through each infused key and send the `#call` message to each injected dependency.
+
+Since `#infused_keys` is a private attribute reader, this means the infused keys are private to each instance. This includes all ancestors when using inheritance as each super class in the hierarchy will have it's own unique array of infused keys depending on what was injected for that object.
+
+All infused keys are frozen by default.
+
 === Tests
 
 As you architect your implementation, you'll want to test your injected dependencies. You'll also want to stub, mock, or spy on them as well. Testing support is built-in for you by only needing to require the stub refinement as provided by this gem. For demonstration purposes, I'm going to assume you are using RSpec but you can adapt for whatever testing framework you are using.

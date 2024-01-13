@@ -7,6 +7,10 @@ module Infusible
   # :reek:TooManyInstanceVariables
   class Constructor < Module
     def self.define_instance_variables target, names, keywords
+      unless target.instance_variable_defined? :@infused_keys
+        target.instance_variable_set :@infused_keys, names
+      end
+
       names.each do |name|
         next unless keywords.key?(name) || !target.instance_variable_defined?(:"@#{name}")
 
@@ -94,6 +98,7 @@ module Infusible
       computed_scope = METHOD_SCOPES.include?(scope) ? scope : :private
 
       instance_module.module_eval <<-READERS, __FILE__, __LINE__ + 1
+        attr_reader :infused_keys
         #{computed_scope} attr_reader #{methods.join ", "}
       READERS
     end

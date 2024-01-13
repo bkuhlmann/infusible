@@ -6,6 +6,26 @@ RSpec.describe Infusible::Constructor do
   before { stub_const "Test::Constructor", described_class.new({eins: 1, zwei: 2}, :eins, :zwei) }
 
   describe "#included" do
+    context "with names only" do
+      let :child do
+        Class.new do
+          include Test::Constructor
+
+          def frozen_infused_keys? = infused_keys.frozen?
+
+          def to_a = infused_keys.map { |key| __send__ key }
+        end
+      end
+
+      it "has frozen infused keys only" do
+        expect(child.new.frozen_infused_keys?).to be(true)
+      end
+
+      it "answers dependencies based on infused keys" do
+        expect(child.new.to_a).to eq([1, 2])
+      end
+    end
+
     context "with names, namespaces, and aliases" do
       let :child do
         Class.new.include described_class.new(
@@ -16,7 +36,11 @@ RSpec.describe Infusible::Constructor do
         )
       end
 
-      it "answers injected dependencies" do
+      it "includes infused keys" do
+        expect(child.new.inspect).to include("@infused_keys=[:eins, :zwei, :drei]")
+      end
+
+      it "includes injected dependencies" do
         expect(child.new.inspect).to include("@eins=1, @zwei=2, @drei=3")
       end
     end
@@ -24,6 +48,10 @@ RSpec.describe Infusible::Constructor do
     context "with private scope" do
       let :child do
         Class.new.include described_class.new({eins: 1, zwei: 2}, :eins, scope: :private)
+      end
+
+      it "includes infused keys" do
+        expect(child.new.inspect).to include("@infused_keys=[:eins]")
       end
 
       it "fails when attempting to access private dependency" do
@@ -37,6 +65,10 @@ RSpec.describe Infusible::Constructor do
         Class.new.include described_class.new({eins: 1, zwei: 2}, :eins, scope: :protected)
       end
 
+      it "includes infused keys" do
+        expect(child.new.inspect).to include("@infused_keys=[:eins]")
+      end
+
       it "fails when attempting to access protected dependency" do
         expectation = proc { child.new.eins }
         expect(&expectation).to raise_error(NameError, /protected method/)
@@ -46,6 +78,10 @@ RSpec.describe Infusible::Constructor do
     context "with public scope" do
       let :child do
         Class.new.include described_class.new({eins: 1, zwei: 2}, :eins, scope: :public)
+      end
+
+      it "includes infused keys" do
+        expect(child.new.inspect).to include("@infused_keys=[:eins]")
       end
 
       it "answers dependency" do
@@ -67,7 +103,11 @@ RSpec.describe Infusible::Constructor do
     context "with partially injected dependencies" do
       let(:child) { Class.new.include described_class.new({eins: 1, zwei: 2}, :eins) }
 
-      it "answers specificly injected dependencies" do
+      it "includes infused keys" do
+        expect(child.new.inspect).to include("@infused_keys=[:eins]")
+      end
+
+      it "includes specific injected dependencies" do
         expect(child.new.inspect).to include("@eins=1")
       end
 
@@ -98,7 +138,7 @@ RSpec.describe Infusible::Constructor do
         end
       end
 
-      it "answers injected dependencies" do
+      it "includes injected dependencies" do
         function = proc { "test" }
         instance = child.new(:one, :c, :d, four: 4, &function)
 
@@ -164,7 +204,7 @@ RSpec.describe Infusible::Constructor do
 
       let(:child) { Class.new(parent).include Test::Constructor }
 
-      it "answers injected dependencies plus parent instance variable" do
+      it "includes injected dependencies plus parent instance variable" do
         expect(child.new.inspect).to include("@eins=1, @zwei=2, @obscured=:obscured")
       end
     end
@@ -184,7 +224,7 @@ RSpec.describe Infusible::Constructor do
 
       let(:child) { Class.new(parent).include Test::Constructor }
 
-      it "answers injected dependencies plus child to parent dependency" do
+      it "includes injected dependencies plus child to parent dependency" do
         expect(child.new(:other).inspect).to include("@eins=1, @zwei=2, @other=:other")
       end
     end
@@ -204,7 +244,7 @@ RSpec.describe Infusible::Constructor do
 
       let(:child) { Class.new(parent).include Test::Constructor }
 
-      it "answers injected dependencies plus splatted dependencies from child" do
+      it "includes injected dependencies plus splatted dependencies from child" do
         instance = child.new :one, :two
 
         expect(instance.inspect).to include(
@@ -229,7 +269,7 @@ RSpec.describe Infusible::Constructor do
 
       let(:child) { Class.new(parent).include Test::Constructor }
 
-      it "answers matched overridden dependency and includes keyword splat" do
+      it "includes matched overridden dependency and keyword splat" do
         instance = child.new eins: :one, zwei: 2, c: 3
         expect(instance.inspect).to include("@eins=:one, @zwei=2, @first=:one, @rest={:c=>3}")
       end
@@ -245,7 +285,7 @@ RSpec.describe Infusible::Constructor do
         end
       end
 
-      it "answers injected dependencies" do
+      it "includes injected dependencies" do
         expect(child.new.inspect).to include("@eins=1, @zwei=2")
       end
     end
@@ -260,7 +300,7 @@ RSpec.describe Infusible::Constructor do
         end
       end
 
-      it "answers injected dependencies" do
+      it "includes injected dependencies" do
         expect(child.new.inspect).to include("@eins=1, @zwei=2")
       end
     end
@@ -275,7 +315,7 @@ RSpec.describe Infusible::Constructor do
         end
       end
 
-      it "answers injected dependencies" do
+      it "includes injected dependencies" do
         expect(child.new.inspect).to include("@eins=1, @zwei=2")
       end
     end
@@ -284,7 +324,15 @@ RSpec.describe Infusible::Constructor do
       let(:parent) { Class.new.include described_class.new({a: 1, b: 2}, :a, :b) }
       let(:child) { Class.new(parent).include Test::Constructor }
 
-      it "answers child preferred injected dependencies" do
+      it "includes parent infused keys only" do
+        expect(parent.new.inspect).to include("@infused_keys=[:a, :b]")
+      end
+
+      it "includes child, not parent, infused keys" do
+        expect(child.new.inspect).to include("@infused_keys=[:eins, :zwei]")
+      end
+
+      it "includes child preferred injected dependencies" do
         expect(child.new.inspect).to include("@eins=1, @zwei=2")
       end
     end
@@ -293,7 +341,15 @@ RSpec.describe Infusible::Constructor do
       let(:parent) { Class.new.include described_class.new({a: 1, b: 2}, :a, :b) }
       let(:child) { Class.new(parent).include described_class.new({a: 3, b: 4}, :b) }
 
-      it "answers child preferred injected dependencies" do
+      it "includes parent infused keys only" do
+        expect(parent.new.inspect).to include("@infused_keys=[:a, :b]")
+      end
+
+      it "includes child, not parent, infused keys" do
+        expect(child.new.inspect).to include("@infused_keys=[:b]")
+      end
+
+      it "includes child preferred injected dependencies" do
         expect(child.new.inspect).to include("@b=4, @a=1")
       end
     end

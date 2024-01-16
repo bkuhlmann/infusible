@@ -10,7 +10,7 @@
 
 Automatically injects dependencies within your object via the _Dependency Inversion Principle_ -- the _D_ in _SOLID_ design -- and is a powerful way to compose complex architectures from small objects which leverage the _Single Responsibility Principle_ -- the _S_ in _SOLID_ design.
 
-This means -- when coupled with {dependency_injection_containers_link} as provided by the {dry-container_link} gem -- Infusible completes the second half of the _Dependency Inversion Principle_. Here's a quick example of Infusible in action:
+When coupled with {dependency_injection_containers_link}, as provided by the {dry-container_link} gem, Infusible completes the second half of the _Dependency Inversion Principle_. Here's a quick example of Infusible in action:
 
 [source,ruby]
 ----
@@ -73,7 +73,7 @@ require "infusible"
 
 == Usage
 
-There is basic and advanced usage. We'll start with basic and work our to advanced usage.
+There is basic and advanced usage. We'll start with the basics and work our to more advanced usage.
 
 === Basic
 
@@ -81,7 +81,7 @@ This gem requires three steps for proper use:
 
 . A container.
 . An import constant.
-. A class and/or multiple classes for dependencies to be injected into.
+. An object and/or multiple objects for dependencies to be injected into.
 
 Let's walk through each staring by defining a container of dependencies.
 
@@ -238,7 +238,7 @@ class Pinger
 end
 ----
 
-The above will ensure the logger gets passed upwards to the superclass while remaining accessible by subclass.
+The above will ensure the logger gets passed upwards to the superclass while remaining accessible by the subclass.
 
 ==== Inheritance
 
@@ -289,7 +289,7 @@ end
 
 With the above, the child class will have access to both the `logger` and `http` dependencies.
 
-⚠️ Be careful when using parent dependencies within your child classes since they are _private by default_. Even though you can reach them, they might change, which can break your downstream dependencies and probably should be avoided or at least defined as `protected` by your parent objects in order to avoid breaking your parent/child relationship.
+⚠️ Be careful when using parent dependencies within your child classes since they are _private by default_. Even though you can reach them, they might change, which can break your downstream dependencies and probably should be avoided or at least defined as `protected` by your parent objects in order to avoid breaking the parent/child relationship.
 
 ==== Scopes
 
@@ -299,7 +299,7 @@ By default -- and in all of the examples shown so far -- your dependencies are p
 * `include Import.protected(logger)`: Injects a _protected_ logger dependency. Useful with inheritance and a subclass needs access to the dependency.
 * `include Import.public(:logger)`: Injects a _public_ logger dependency.
 
-There is no `+#private+` method since `#[]` does this for you and is the recommended practice. Use of `#public` and `+#protected+` should be uses sparingly or not at all if you can avoid it. Here's an example where public, protected, and private dependencies are injected:
+There is no `+#private+` method since `#[]` does this for you and is _recommended practice_. Use of `+#public+` and `+#protected+` should be used sparingly or not at all if you can avoid it. Here's an example where public, protected, and private dependencies are injected:
 
 [source,ruby]
 ----
@@ -354,7 +354,7 @@ Demo.new.call
 # Two
 ----
 
-As you can see, with the _private_ `#infused_keys` attribute reader, we were able to iterate through each infused key and send the `#call` message to each injected dependency.
+As you can see, with the _private_ `#infused_keys` attribute reader, we are able to iterate through each infused key and send the `#call` message to each injected dependency.
 
 Since `#infused_keys` is a private attribute reader, this means the infused keys are private to each instance. This includes all ancestors when using inheritance as each super class in the hierarchy will have it's own unique array of infused keys depending on what was injected for that object.
 
@@ -362,7 +362,7 @@ All infused keys are frozen by default.
 
 === Tests
 
-As you architect your implementation, you'll want to test your injected dependencies. You'll also want to stub, mock, or spy on them as well. Testing support is built-in for you by only needing to require the stub refinement as provided by this gem. For demonstration purposes, I'm going to assume you are using RSpec but you can adapt for whatever testing framework you are using.
+As you architect your implementation, you'll want to test your injected dependencies. You might want to stub, mock, or spy on them as well. Test support is built-in for you by only requiring the stub refinement as provided by this gem. For demonstration purposes, I'll assume you are using RSpec but you can adapt for whatever testing framework you are using.
 
 Let's say you have the following implementation that combines both {dry-container_link} (or a primitive `Hash` would work too) and this gem:
 
@@ -415,7 +415,7 @@ RSpec.describe Action do
 end
 ----
 
-Notice that there is very little setup required to test the injected dependencies. You only need to use the refinement and define what you want stubbed in your `before` and `after` blocks. That's it!
+Notice there is little setup required to test the injected dependencies. You only need to use the refinement and define what you want stubbed in your `before` and `after` blocks. That's it!
 
 While the above works great for a single spec, over time you'll want to reduce duplicated setup by using a shared context. Here's a rewrite of the above spec which significantly reduces duplication when needing to test multiple objects using the same dependencies:
 
@@ -487,7 +487,7 @@ bin/console
 
 === Architecture
 
-This gem automates a lot of the boilerplate code you'd normally have to do manually by defining your constructor, initializer, and instance variables for you. Normally, when injecting dependencies, you'd do something like this (using the `Pinger` example provided earlier):
+This gem automates a lot of the boilerplate code you'd manually do by defining your constructor, initializer, and instance variables for you. Normally, when injecting dependencies, you'd do something like this (using the `Pinger` example provided earlier):
 
 [source,ruby]
 ----
@@ -527,10 +527,10 @@ Your constructor, initializer, and instance variables are all there. Only you do
 When using this gem, along with a container like {dry-container_link}, make sure to adhere to the following guidelines:
 
 * Use containers to group related dependencies that make logical sense for the namespace you are working in and avoid using containers as a junk drawer for throwing random objects in.
-* Use containers that don't have a lot of registered dependencies. If you register too many dependencies, then that means your objects are too complex and need to be simplified further.
+* Use containers that don't have a lot of registered dependencies. If you register too many dependencies, that means your objects are too complex and need to be simplified further.
 * Use the `Import` constant to define _what_ is possible to import much like you'd use a `Container` to define your dependencies. Defining what is importable improves performance and should be defined in separate files for improved fuzzy file finding.
 * Use `**` to forward keyword arguments when defining an initializer which needs to pass injected dependencies upwards.
-* Prefer `Import#[]` over the use of `Import#public` and/or `Import#protected` as much as a possible since injected dependencies should be private, by default, in order to not break encapsulation. That said, there are times where making them public and/or protected can save you from writing more boilerplate code.
+* Prefer `Import#[]` over the use of `Import#public` and/or `Import#protected` as much as a possible since injected dependencies should be private, by default, in order to not break encapsulation. That said, there are times where making them public and/or protected can save you from writing boilerplate code.
 
 == Tests
 

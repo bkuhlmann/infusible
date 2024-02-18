@@ -30,20 +30,20 @@ module Infusible
       @instance_module = Class.new(Module).new
     end
 
-    def included klass
+    def included descendant
       super
-      define klass
-      klass.extend class_module
-      klass.include instance_module
+      define descendant
+      descendant.extend class_module
+      descendant.include instance_module
     end
 
     private
 
     attr_reader :container, :dependencies, :scope, :class_module, :instance_module
 
-    def define klass
+    def define descendant
       define_new
-      define_initialize klass
+      define_initialize descendant
       define_readers
     end
 
@@ -56,8 +56,8 @@ module Infusible
       end
     end
 
-    def define_initialize klass
-      super_parameters = Marameters.of(klass, :initialize).map do |instance|
+    def define_initialize descendant
+      super_parameters = Marameters.of(descendant, :initialize).map do |instance|
         break instance unless instance.only_bare_splats?
       end
 

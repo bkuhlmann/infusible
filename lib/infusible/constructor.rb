@@ -31,6 +31,11 @@ module Infusible
     end
 
     def included descendant
+      unless descendant.is_a? Class
+        fail TypeError,
+             "Can only infuse a class, invalid object: #{descendant} (#{descendant.class})."
+      end
+
       super
       define descendant
       descendant.extend class_module

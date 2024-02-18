@@ -6,6 +6,15 @@ RSpec.describe Infusible::Constructor do
   before { stub_const "Test::Constructor", described_class.new({eins: 1, zwei: 2}, :eins, :zwei) }
 
   describe "#included" do
+    it "fails with type error when infusing a module" do
+      expectation = proc { Module.new { include Test::Constructor } }
+
+      expect(&expectation).to raise_error(
+        TypeError,
+        /Can only infuse a class, invalid object:.+<Module.+> \(Module\)./
+      )
+    end
+
     context "with names only" do
       let :child do
         Class.new do

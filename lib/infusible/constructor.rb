@@ -8,6 +8,7 @@ module Infusible
   class Constructor < Module
     def self.define_instance_variables target, names, keywords
       unless target.instance_variable_defined? :@infused_keys
+        target.instance_variable_set :@infused_names, names
         target.instance_variable_set :@infused_keys, names
       end
 
@@ -103,7 +104,14 @@ module Infusible
       computed_scope = METHOD_SCOPES.include?(scope) ? scope : :private
 
       instance_module.module_eval <<-READERS, __FILE__, __LINE__ + 1
-        attr_reader :infused_keys
+        attr_reader :infused_names
+
+        def infused_keys
+          warn "Inusible `#infused_keys` is deprecated, use `#infused_names` instead.",
+               category: :deprecated
+          @infused_keys
+        end
+
         #{computed_scope} attr_reader #{methods.join ", "}
       READERS
     end

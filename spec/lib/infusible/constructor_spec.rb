@@ -22,16 +22,29 @@ RSpec.describe Infusible::Constructor do
 
           def frozen_infused_keys? = infused_keys.frozen?
 
-          def to_a = infused_keys.map { |key| __send__ key }
+          def frozen_infused_names? = infused_names.frozen?
+
+          def to_a = infused_names.map { |key| __send__ key }
         end
+      end
+
+      it "has frozen infused names only" do
+        expect(child.new.frozen_infused_names?).to be(true)
+      end
+
+      it "answers dependencies based on infused names" do
+        expect(child.new.to_a).to eq([1, 2])
+      end
+
+      it "shows deprecation warning for infused keys" do
+        expectation = proc { child.new.frozen_infused_keys? }
+        warning = "Inusible `#infused_keys` is deprecated, use `#infused_names` instead.\n"
+
+        expect(&expectation).to output(warning).to_stderr
       end
 
       it "has frozen infused keys only" do
         expect(child.new.frozen_infused_keys?).to be(true)
-      end
-
-      it "answers dependencies based on infused keys" do
-        expect(child.new.to_a).to eq([1, 2])
       end
     end
 

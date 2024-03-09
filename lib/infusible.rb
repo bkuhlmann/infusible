@@ -1,21 +1,8 @@
 # frozen_string_literal: true
 
-require "zeitwerk"
-
-Zeitwerk::Loader.new.then do |loader|
-  loader.tag = File.basename __FILE__, ".rb"
-  loader.ignore "#{__dir__}/infusible/stub"
-  loader.push_dir __dir__
-  loader.setup
-end
-
 # Main namespace.
 module Infusible
   METHOD_SCOPES = %i[public protected private].freeze
-
-  def self.loader registry = Zeitwerk::Registry
-    @loader ||= registry.loaders.find { |loader| loader.tag == File.basename(__FILE__, ".rb") }
-  end
 
   def self.with(container) = Actuator.new container
 end

@@ -326,9 +326,9 @@ demo.two    # NoMethodError: protected method.
 demo.three  # NoMethodError: private method.
 ----
 
-==== Infused Keys
+==== Infused Names
 
-You have access to the keys of all infused dependencies via the _private_ `infused_keys` method which can be powerful in metaprogramming situations. For example, consider the following, which calls all injected dependencies since they have the same Object API (i.e. `#call`):
+You have access to the names of all infused dependencies via the _private_ `#infused_names` method which is powerful in metaprogramming situations. For example, consider the following which calls all injected dependencies since they have the same Object API (i.e. `#call`):
 
 Example:
 
@@ -346,7 +346,7 @@ Import = Infusible.with Container
 class Demo
   include Import[:one, :two]
 
-  def call = infused_keys.each { |key| __send__(key).call }
+  def call = infused_names.each { |key| __send__(key).call }
 end
 
 Demo.new.call
@@ -354,11 +354,11 @@ Demo.new.call
 # Two
 ----
 
-As you can see, with the _private_ `#infused_keys` attribute reader, we are able to iterate through each infused key and send the `#call` message to each injected dependency.
+As you can see, with the _private_ `#infused_names` attribute reader, we are able to iterate through each infused name and send the `#call` message to each injected dependency.
 
-Since `#infused_keys` is a private attribute reader, this means the infused keys are private to each instance. This includes all ancestors when using inheritance as each super class in the hierarchy will have it's own unique array of infused keys depending on what was injected for that object.
+Since `#infused_names` is a private attribute reader, this means the infused names are private to each instance. This includes all ancestors when using inheritance as each parent class in the hierarchy will have it's own unique array of infused names depending on what was injected for that object.
 
-All infused keys are frozen by default.
+All infused names are frozen by default.
 
 === Tests
 

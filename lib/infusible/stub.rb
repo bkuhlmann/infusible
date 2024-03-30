@@ -7,14 +7,27 @@ module Infusible
   module Stub
     refine Actuator do
       def stub_with(pairs, &)
+        warn "`#{self.class}##{__method__}` is deprecated, use the Containable gem instead.",
+             category: :deprecated
+
         return unless block_given?
 
         container.is_a?(Hash) ? stub_hash_with(pairs, &) : stub_container_with(pairs, &)
       end
 
-      def stub(pairs) = container.is_a?(Hash) ? stub_hash(pairs) : stub_container(pairs)
+      def stub pairs
+        warn "`#{self.class}##{__method__}` is deprecated, use the Containable gem instead",
+             category: :deprecated
 
-      def unstub(*keys) = container.is_a?(Hash) ? unstub_hash(*keys) : unstub_container(*keys)
+        container.is_a?(Hash) ? stub_hash(pairs) : stub_container(pairs)
+      end
+
+      def unstub(*keys)
+        warn "`#{self.class}##{__method__}` is deprecated, use the Containable gem instead",
+             category: :deprecated
+
+        container.is_a?(Hash) ? unstub_hash(*keys) : unstub_container(*keys)
+      end
 
       private
 

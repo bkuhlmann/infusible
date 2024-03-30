@@ -39,6 +39,11 @@ RSpec.describe Infusible::Stub do
         Test::Import.stub_with a: 100, b: 200, c: 300
         expect(child.new.inspect).to include("@a=1, @b=2, @c=3")
       end
+
+      it "warns the method is deprecated" do
+        expectation = proc { Test::Import.stub_with a: 100 }
+        expect(&expectation).to output(/is deprecated/).to_stderr
+      end
     end
 
     context "with Dry Container" do
@@ -57,6 +62,11 @@ RSpec.describe Infusible::Stub do
         Test::Import.stub_with a: 100, b: 200, c: 300
         expect(child.new.inspect).to include("@a=1, @b=2, @c=3")
       end
+
+      it "warns the method is deprecated" do
+        expectation = proc { Test::Import.stub_with a: 100 }
+        expect(&expectation).to output(/is deprecated/).to_stderr
+      end
     end
   end
 
@@ -71,6 +81,11 @@ RSpec.describe Infusible::Stub do
         Test::Import.stub a: 100, b: 200, c: 300
         expect(child.new.inspect).to include("@a=100, @b=200, @c=300")
       end
+
+      it "warns the method is deprecated" do
+        expectation = proc { Test::Import.stub_with a: 100 }
+        expect(&expectation).to output(/is deprecated/).to_stderr
+      end
     end
 
     context "with Dry Container" do
@@ -82,6 +97,11 @@ RSpec.describe Infusible::Stub do
       it "includes stubbed dependencies" do
         Test::Import.stub a: 100, b: 200, c: 300
         expect(child.new.inspect).to include("@a=100, @b=200, @c=300")
+      end
+
+      it "warns the method is deprecated" do
+        expectation = proc { Test::Import.stub_with a: 100 }
+        expect(&expectation).to output(/is deprecated/).to_stderr
       end
     end
   end
@@ -99,6 +119,11 @@ RSpec.describe Infusible::Stub do
         Test::Import.unstub :a, :b, :c
         expect(child.new.inspect).to include("@a=1, @b=2, @c=3")
       end
+
+      it "warns the method is deprecated" do
+        expectation = proc { Test::Import.stub_with a: 100 }
+        expect(&expectation).to output(/is deprecated/).to_stderr
+      end
     end
 
     context "with Dry Container" do
@@ -112,6 +137,11 @@ RSpec.describe Infusible::Stub do
       it "includes original dependencies" do
         Test::Import.unstub :a, :b, :c
         expect(child.new.inspect).to include("@a=1, @b=2, @c=3")
+      end
+
+      it "warns the method is deprecated" do
+        expectation = proc { Test::Import.stub_with a: 100 }
+        expect(&expectation).to output(/is deprecated/).to_stderr
       end
     end
   end

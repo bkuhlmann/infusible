@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "dry/container"
+require "containable"
 require "spec_helper"
 
 RSpec.describe Infusible::Actuator do
@@ -12,7 +12,7 @@ RSpec.describe Infusible::Actuator do
 
       let :container do
         Module.new do
-          extend Dry::Container::Mixin
+          extend Containable
 
           register(:a) { 1 }
           register(:b) { 2 }
@@ -43,7 +43,7 @@ RSpec.describe Infusible::Actuator do
 
     let :container do
       Module.new do
-        extend Dry::Container::Mixin
+        extend Containable
 
         register(:a) { 1 }
         register(:b) { 2 }
@@ -62,7 +62,7 @@ RSpec.describe Infusible::Actuator do
 
     let :container do
       Module.new do
-        extend Dry::Container::Mixin
+        extend Containable
 
         register(:a) { 1 }
         register(:b) { 2 }

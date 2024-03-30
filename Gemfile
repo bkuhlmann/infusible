@@ -18,6 +18,7 @@ group :development do
 end
 
 group :test do
+  gem "containable", "~> 0.0"
   gem "dry-container", "~> 0.11"
   gem "guard-rspec", "~> 4.7", require: false
   gem "rspec", "~> 3.13"

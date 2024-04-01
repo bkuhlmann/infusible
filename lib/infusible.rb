@@ -12,5 +12,8 @@ module Infusible
 
   def self.[](container) = Actuator.new container
 
-  def self.with(container) = Actuator.new container
+  def self.with container
+    warn "`Infusible.#{__method__}` is deprecated, use `.[]` instead.", category: :deprecated
+    Actuator.new container
+  end
 end

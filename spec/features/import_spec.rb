@@ -5,7 +5,7 @@ require "spec_helper"
 RSpec.describe "Import" do
   before do
     stub_const "Test::Container", {one: 1, two: 2, three: 3}
-    stub_const "Test::Import", Infusible.with(Test::Container)
+    stub_const "Test::Import", Infusible[Test::Container]
   end
 
   it "answers public message" do

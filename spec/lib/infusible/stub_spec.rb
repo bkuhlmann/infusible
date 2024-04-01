@@ -8,7 +8,7 @@ require "spec_helper"
 RSpec.describe Infusible::Stub do
   using described_class
 
-  subject(:infusible) { Infusible.with Test::Container }
+  subject(:infusible) { Infusible[Test::Container] }
 
   let(:child) { Class.new.include Test::Import[:a, :b, :c] }
 

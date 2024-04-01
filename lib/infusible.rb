@@ -10,5 +10,7 @@ require "infusible/errors/invalid_dependency"
 module Infusible
   METHOD_SCOPES = %i[public protected private].freeze
 
+  def self.[](container) = Actuator.new container
+
   def self.with(container) = Actuator.new container
 end

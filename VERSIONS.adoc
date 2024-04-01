@@ -1,5 +1,16 @@
 = Versions
 
+== 3.5.0 (2024-04-03)
+
+* 🟢 Added Containable gem - Brooke Kuhlmann
+* 🟢 Added deprecation warning for infused names method - Brooke Kuhlmann
+* 🟢 Added deprecation warning for with method - Brooke Kuhlmann
+* 🟢 Added stubbing deprecation warnings - Brooke Kuhlmann
+* 🟢 Added top-level setter - Brooke Kuhlmann
+* 🔼 Updated implementation to use Containable - Brooke Kuhlmann
+* 🔼 Updated setup script as a Ruby script - Brooke Kuhlmann
+* 🔁 Refactored dependency map to use key instead of name terminology - Brooke Kuhlmann
+
 == 3.4.0 (2024-03-09)
 
 * 🟢 Added implementation requires - Brooke Kuhlmann

@@ -3,18 +3,18 @@
 :figure-caption!:
 
 :dependency_injection_containers_link: link:https://alchemists.io/articles/dependency_injection_containers[Dependency Injection Containers]
-:dry-container_link: link:https://dry-rb.org/gems/dry-container[Dry Container]
+:containable_link: link:https://alchemists.io/projects/containable[Containable]
 :http_link: link:https://github.com/httprb/http[HTTP]
 
 = Infusible
 
 Automatically injects dependencies within your object via the _Dependency Inversion Principle_ -- the _D_ in _SOLID_ design -- and is a powerful way to compose complex architectures from small objects which leverage the _Single Responsibility Principle_ -- the _S_ in _SOLID_ design.
 
-When coupled with {dependency_injection_containers_link}, as provided by the {dry-container_link} gem, Infusible completes the second half of the _Dependency Inversion Principle_. Here's a quick example of Infusible in action:
+When coupled with {dependency_injection_containers_link}, as provided by the {containable_link} gem, Infusible completes the second half of the _Dependency Inversion Principle_. Here's a quick example of Infusible in action:
 
 [source,ruby]
 ----
-Import = Infusible.with({a: 1, b: 2, c: 3})
+Import = Infusible[a: 1, b: 2, c: 3]
 
 class Demo
   include Import[:a, :b, :c]
@@ -87,19 +87,20 @@ Let's walk through each staring by defining a container of dependencies.
 
 ==== Containers
 
-A container provides a common object for which you can group related dependencies for injection and reuse. {dry-container_link} is recommended for defining your dependencies but a primitive `Hash` or any object which responds to the `#[]` message works too.
+A container provides a common object for which you can group related dependencies for injection and reuse. {containable_link} is recommended for defining your dependencies but a primitive `Hash` or any object which responds to the `#[]` message works too.
 
-For documentation purposes, the {dry-container_link} gem will be used. The following creates a simple container where you might want to use the {http_link} gem to make HTTP requests and log information using Ruby's native logger.
+For documentation purposes, the {containable_link} gem will be used. The following creates a simple container where you might want to use the {http_link} gem to make HTTP requests and log information using Ruby's native logger.
 
 [source,ruby]
 ----
+require "containable"
 require "http"
 require "logger"
 
 module Container
-  extend Dry::Container::Mixin
+  extend Containable
 
-  register(:http) { HTTP }
+  register :http, HTTP
   register(:logger) { Logger.new STDOUT }
 end
 ----
@@ -112,7 +113,7 @@ Once your container is defined, you'll want to define the corresponding injector
 ----
 require "infusible"
 
-Import = Infusible.with Container
+Import = Infusible[Container]
 ----
 
 ==== Dependencies
@@ -304,14 +305,14 @@ There is no `+#private+` method since `#[]` does this for you and is _recommende
 [source,ruby]
 ----
 module Container
-  extend Dry::Container::Mixin
+  extend Containable
 
-  register(:one) { "One" }
-  register(:two) { "Two" }
-  register(:three) { "Three" }
+  register :one, "One"
+  register :two, "Two"
+  register :three, "Three"
 end
 
-Import = Infusible.with Container
+Import = Infusible[Container]
 
 class Demo
   include Import.public(:one)
@@ -335,18 +336,18 @@ Example:
 [source,ruby]
 ----
 module Container
-  extend Dry::Container::Mixin
+  extend Containable
 
-  register(:one, proc { puts "One" }, call: false)
-  register(:two, proc { puts "Two" }, call: false)
+  register :one, "One"
+  register :two, "Two"
 end
 
-Import = Infusible.with Container
+Import = Infusible[Container]
 
 class Demo
   include Import[:one, :two]
 
-  def call = infused_keys.each { |key| puts __send__(key).call }
+  def call = infused_keys.each { |key| puts __send__(key) }
 end
 
 Demo.new.call
@@ -362,21 +363,19 @@ All infused keys are frozen by default.
 
 === Tests
 
-As you architect your implementation, you'll want to test your injected dependencies. You might want to stub, mock, or spy on them as well. Test support is built-in for you by only requiring the stub refinement as provided by this gem. For demonstration purposes, I'll assume you are using RSpec but you can adapt for whatever testing framework you are using.
-
-Let's say you have the following implementation that combines both {dry-container_link} (or a primitive `Hash` would work too) and this gem:
+As you architect your implementation, you'll want to test your injected dependencies. You might want to stub, mock, or spy on them as well. Test support is primarily provided via the {containable_link} gem. Example:
 
 [source,ruby]
 ----
 # Our container with a single dependency.
 module Container
-  extend Dry::Container::Mixin
+  extend Containable
 
-  register(:kernel) { Kernel }
+  register :kernel, Kernel
 end
 
 # Our import which defines our container for potential injection.
-Import = Infusible.with Container
+Import = Infusible[Container]
 
 # Our action class which injects our kernel dependency from our container.
 class Action
@@ -390,21 +389,14 @@ With our implementation defined, we can test as follows:
 
 [source,ruby]
 ----
-# Required: You must require Dry Container and Infusible stubbing for testing purposes.
-require "dry/container/stub"
-require "infusible/stub"
-
 RSpec.describe Action do
-  # Required: You must refine Infusible to leverage stubbing of your dependencies.
-  using Infusible::Stub
-
   subject(:action) { Action.new }
 
   let(:kernel) { class_spy Kernel }
 
-  # Required: You must define what dependencies you want to stub and unstub before and after a test.
-  before { Import.stub kernel: }
-  after { Import.unstub :kernel }
+  before { Container.stub! kernel: }
+
+  after { Container.restore }
 
   describe "#call" do
     it "prints message" do
@@ -422,16 +414,12 @@ While the above works great for a single spec, over time you'll want to reduce d
 [source,ruby]
 ----
 # spec/support/shared_contexts/application_container.rb
-require "dry/container/stub"
-require "infusible/stub"
-
 RSpec.shared_context "with application dependencies" do
-  using Infusible::Stub
-
   let(:kernel) { class_spy Kernel }
 
-  before { Import.stub kernel: }
-  after { Import.unstub :kernel }
+  before { Container.stub! kernel: }
+
+  after { Container.restore }
 end
 ----
 
@@ -452,20 +440,7 @@ RSpec.describe Action do
 end
 ----
 
-A shared context allows you to reuse it across multiple specs by including it as needed.
-
-In both spec examples -- so far -- you'll notice only RSpec `before` and `after` blocks are used. You can use an `around` block too. Example:
-
-[source,ruby]
-----
-around do |example|
-  Import.stub_with kernel: FakeKernel do
-    example.run
-  end
-end
-----
-
-⚠️ I mention `around` block support last because the caveat is that you can't use an `around` block with any RSpec test double since link:https://github.com/rspec/rspec-mocks/issues/1283[RSpec can't guarantee proper cleanup]. This is why the RSpec `before` and `after` blocks were used to guarantee proper setup and teardown. That said, you can use _fakes_ or any object you own which _isn't_ a RSpec test double but provides the Object API you need for testing purposes.
+A shared context allows for reuse across multiple specs by including it as needed.
 
 == Development
 
@@ -524,7 +499,7 @@ Your constructor, initializer, and instance variables are all there. Only you do
 
 === Style Guide
 
-When using this gem, along with a container like {dry-container_link}, make sure to adhere to the following guidelines:
+When using this gem, along with a container like {containable_link}, make sure to adhere to the following guidelines:
 
 * Use containers to group related dependencies that make logical sense for the namespace you are working in and avoid using containers as a junk drawer for throwing random objects in.
 * Use containers that don't have a lot of registered dependencies. If you register too many dependencies, that means your objects are too complex and need to be simplified further.

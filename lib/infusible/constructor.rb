@@ -6,16 +6,16 @@ module Infusible
   # Provides the automatic and complete resolution of all injected dependencies.
   # :reek:TooManyInstanceVariables
   class Constructor < Module
-    def self.define_instance_variables target, names, keywords
+    def self.define_instance_variables target, keys, keywords
       unless target.instance_variable_defined? :@infused_keys
-        target.instance_variable_set :@infused_names, names
-        target.instance_variable_set :@infused_keys, names
+        target.instance_variable_set :@infused_names, keys
+        target.instance_variable_set :@infused_keys, keys
       end
 
-      names.each do |name|
-        next unless keywords.key?(name) || !target.instance_variable_defined?(:"@#{name}")
+      keys.each do |key|
+        next unless keywords.key?(key) || !target.instance_variable_defined?(:"@#{key}")
 
-        target.instance_variable_set :"@#{name}", keywords[name]
+        target.instance_variable_set :"@#{key}", keywords[key]
       end
     end
 
@@ -104,12 +104,12 @@ module Infusible
       computed_scope = METHOD_SCOPES.include?(scope) ? scope : :private
 
       instance_module.module_eval <<-READERS, __FILE__, __LINE__ + 1
-        attr_reader :infused_names
+        attr_reader :infused_keys
 
-        def infused_keys
-          warn "Inusible `#infused_keys` is deprecated, use `#infused_names` instead.",
+        def infused_names
+          warn "`Inusible#infused_names` is deprecated, use `#infused_keys` instead.",
                category: :deprecated
-          @infused_keys
+          @infused_names
         end
 
         #{computed_scope} attr_reader #{methods.join ", "}

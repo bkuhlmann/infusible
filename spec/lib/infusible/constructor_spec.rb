@@ -36,9 +36,9 @@ RSpec.describe Infusible::Constructor do
         expect(child.new.to_a).to eq([1, 2])
       end
 
-      it "shows deprecation warning for infused keys" do
-        expectation = proc { child.new.frozen_infused_keys? }
-        warning = "Inusible `#infused_keys` is deprecated, use `#infused_names` instead.\n"
+      it "shows deprecation warning for infused names" do
+        expectation = proc { child.new.frozen_infused_names? }
+        warning = "`Inusible#infused_names` is deprecated, use `#infused_keys` instead.\n"
 
         expect(&expectation).to output(warning).to_stderr
       end

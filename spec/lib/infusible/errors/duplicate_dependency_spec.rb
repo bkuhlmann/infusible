@@ -3,7 +3,7 @@
 require "spec_helper"
 
 RSpec.describe Infusible::Errors::DuplicateDependency do
-  subject(:error) { described_class.new name: "a", identifier: :a }
+  subject(:error) { described_class.new key: "a", identifier: :a }
 
   describe "#message" do
     it "answers error message" do

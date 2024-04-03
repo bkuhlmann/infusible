@@ -4,8 +4,8 @@ module Infusible
   module Errors
     # Prevents duplicate dependencies from being injected.
     class DuplicateDependency < StandardError
-      def initialize name:, identifier:
-        super "Remove #{identifier.inspect} since it's a duplicate of #{name.inspect}."
+      def initialize key:, identifier:
+        super "Remove #{identifier.inspect} since it's a duplicate of #{key.inspect}."
       end
     end
   end

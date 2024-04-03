@@ -5,22 +5,22 @@ require "spec_helper"
 RSpec.describe Infusible::DependencyMap do
   subject(:dependency_map) { described_class.new(*configuration) }
 
-  describe "#names" do
-    context "with names, namespaces, and aliases" do
+  describe "#keys" do
+    context "with keys, namespaces, and aliases" do
       let(:configuration) { [:a, "n.b", {demo: "test"}] }
 
-      it "answers names as symbols" do
-        expect(dependency_map.names).to eq(%i[a b demo])
+      it "answers keys as symbols" do
+        expect(dependency_map.keys).to eq(%i[a b demo])
       end
 
       it "is frozen" do
-        expect(dependency_map.names.frozen?).to be(true)
+        expect(dependency_map.keys.frozen?).to be(true)
       end
     end
   end
 
   describe "#to_h" do
-    context "with names (symbols, strings, and underscores)" do
+    context "with keys (symbols, strings, and underscores)" do
       let(:configuration) { [:a, "b", :c_test] }
 
       it "answers symbolized keys with original values" do
@@ -28,7 +28,7 @@ RSpec.describe Infusible::DependencyMap do
       end
     end
 
-    context "with names (numbers)" do
+    context "with keys (numbers)" do
       let(:configuration) { %w[1a b2 0c3] }
 
       it "answers symbolized keys, stripped of leading numbers, with original values" do
@@ -52,7 +52,7 @@ RSpec.describe Infusible::DependencyMap do
       end
     end
 
-    context "with names, namespaces, and aliases" do
+    context "with keys, namespaces, and aliases" do
       let(:configuration) { [:a, "n.b", {demo: "test"}] }
 
       it "answers sanitized and symbolized keys with original values" do
@@ -60,37 +60,37 @@ RSpec.describe Infusible::DependencyMap do
       end
     end
 
-    context "with duplicate name" do
+    context "with duplicate key" do
       let(:configuration) { [:a, "a"] }
 
-      it "fails with duplicate name" do
+      it "fails with duplicate key" do
         expectation = proc { dependency_map.to_h }
         expect(&expectation).to raise_error(Infusible::Errors::DuplicateDependency, /"a"/)
       end
     end
 
-    context "with duplicate names and namespaces" do
+    context "with duplicate keys and namespaces" do
       let(:configuration) { ["one.a", "one.a"] }
 
-      it "fails with duplicate name" do
+      it "fails with duplicate key" do
         expectation = proc { dependency_map.to_h }
         expect(&expectation).to raise_error(Infusible::Errors::DuplicateDependency, /"one\.a"/)
       end
     end
 
-    context "with duplicate name but different namespaces" do
+    context "with duplicate key but different namespaces" do
       let(:configuration) { ["one.a", "two.a"] }
 
-      it "fails with duplicate name" do
+      it "fails with duplicate key" do
         expectation = proc { dependency_map.to_h }
         expect(&expectation).to raise_error(Infusible::Errors::DuplicateDependency, /"two\.a"/)
       end
     end
 
-    context "with duplicate name and alias" do
+    context "with duplicate key and alias" do
       let(:configuration) { [:a, {a: "test"}] }
 
-      it "fails with duplicate name" do
+      it "fails with duplicate key" do
         expectation = proc { dependency_map.to_h }
         expect(&expectation).to raise_error(Infusible::Errors::DuplicateDependency, /"test"/)
       end
@@ -99,25 +99,25 @@ RSpec.describe Infusible::DependencyMap do
     context "with duplicate namespace and alias" do
       let(:configuration) { ["test.a", {a: "test"}] }
 
-      it "fails with duplicate name" do
+      it "fails with duplicate key" do
         expectation = proc { dependency_map.to_h }
         expect(&expectation).to raise_error(Infusible::Errors::DuplicateDependency, /"test"/)
       end
     end
 
-    context "with name of numbers only" do
+    context "with key of numbers only" do
       let(:configuration) { ["123"] }
 
-      it "fails with duplicate name" do
+      it "fails with duplicate key" do
         expectation = proc { dependency_map.to_h }
         expect(&expectation).to raise_error(Infusible::Errors::InvalidDependency, /"123"/)
       end
     end
 
-    context "with name of special characters only" do
+    context "with key of special characters only" do
       let(:configuration) { ["/@!$%\\"] }
 
-      it "fails with duplicate name" do
+      it "fails with duplicate key" do
         expectation = proc { dependency_map.to_h }
         expect(&expectation).to raise_error(Infusible::Errors::InvalidDependency, %r("/@!\$%\\\\"))
       end

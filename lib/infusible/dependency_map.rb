@@ -3,9 +3,9 @@
 module Infusible
   # Sanitizes and resolves dependencies for use.
   class DependencyMap
-    PATTERNS = {name: /([a-z_][a-zA-Z_0-9]*)$/, valid: /^[\w.]+$/}.freeze
+    PATTERNS = {key: /([a-z_][a-zA-Z_0-9]*)$/, valid: /^[\w.]+$/}.freeze
 
-    attr_reader :names
+    attr_reader :keys
 
     def initialize *configuration, patterns: PATTERNS
       @patterns = patterns
@@ -13,10 +13,10 @@ module Infusible
 
       aliases = configuration.last.is_a?(Hash) ? configuration.pop : {}
 
-      configuration.each { |identifier| add to_name(identifier), identifier }
-      aliases.each { |name, identifier| add name, identifier }
+      configuration.each { |identifier| add to_key(identifier), identifier }
+      aliases.each { |key, identifier| add key, identifier }
 
-      @names = collection.keys.freeze
+      @keys = collection.keys.freeze
     end
 
     def to_h = collection
@@ -25,20 +25,20 @@ module Infusible
 
     attr_reader :patterns, :collection
 
-    def to_name identifier
-      name = identifier[patterns.fetch(:name)]
+    def to_key identifier
+      key = identifier[patterns.fetch(:key)]
 
-      return name if name && name.match?(patterns.fetch(:valid))
+      return key if key && key.match?(patterns.fetch(:valid))
 
       fail(Errors::InvalidDependency.new(identifier:))
     end
 
-    def add name, identifier
-      name = name.to_sym
+    def add key, identifier
+      key = key.to_sym
 
-      return collection[name] = identifier unless collection.key? name
+      return collection[key] = identifier unless collection.key? key
 
-      fail Errors::DuplicateDependency.new name:, identifier:
+      fail Errors::DuplicateDependency.new key:, identifier:
     end
   end
 end

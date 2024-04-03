@@ -77,30 +77,30 @@ module Infusible
     end
 
     def define_initialize_with_positionals super_parameters, variablizer
-      instance_module.module_exec dependencies.names, variablizer do |names, definer|
+      instance_module.module_exec dependencies.keys, variablizer do |keys, definer|
         define_method :initialize do |*positionals, **keywords, &block|
-          definer.call self, names, keywords
+          definer.call self, keys, keywords
 
           if super_parameters.only_single_splats?
             super(*positionals, **keywords, &block)
           else
-            super(*positionals, **super_parameters.keyword_slice(keywords, keys: names), &block)
+            super(*positionals, **super_parameters.keyword_slice(keywords, keys:), &block)
           end
         end
       end
     end
 
     def define_initialize_with_keywords super_parameters, variablizer
-      instance_module.module_exec dependencies.names, variablizer do |names, definer|
+      instance_module.module_exec dependencies.keys, variablizer do |keys, definer|
         define_method :initialize do |**keywords, &block|
-          definer.call self, names, keywords
-          super(**super_parameters.keyword_slice(keywords, keys: names), &block)
+          definer.call self, keys, keywords
+          super(**super_parameters.keyword_slice(keywords, keys:), &block)
         end
       end
     end
 
     def define_readers
-      methods = dependencies.names.map { |name| ":#{name}" }
+      methods = dependencies.keys.map { |key| ":#{key}" }
       computed_scope = METHOD_SCOPES.include?(scope) ? scope : :private
 
       instance_module.module_eval <<-READERS, __FILE__, __LINE__ + 1

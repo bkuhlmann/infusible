@@ -105,9 +105,9 @@ module Container
 end
 ----
 
-==== Injectors
+==== Imports
 
-Once your container is defined, you'll want to define the corresponding injector for reuse within your application. Defining an injector only requires two lines of code:
+Once your container is defined, you'll want to define the corresponding import for reuse within your application. Defining an import only requires two lines of code:
 
 [source,ruby]
 ----
@@ -169,7 +169,7 @@ class Pinger
 end
 ----
 
-The namespace (i.e. `primary.`) _and_ delimiter (i.e. `.`) will be removed so only `http` and `logger` are defined for use (as shown in the `#call` method). Only dots (i.e. `.`) are allowed as the delimiter between namespace and dependency.
+The namespace (i.e. `primary`) _and_ delimiter (i.e. `.`) will be removed so only `http` and `logger` are defined for use (as shown in the `#call` method). Only dots (i.e. `.`) are allowed as the delimiter between namespace and dependency.
 
 ==== Aliases
 
@@ -217,7 +217,7 @@ class Downloader
 end
 ----
 
-This allows you to reuse your importer (i.e. `Import`) in as many situations as makes sense while improving performance.
+This allows you to reuse `Import` in as many situations as makes sense while improving performance.
 
 ==== Custom Initialization
 
@@ -297,7 +297,7 @@ With the above, the child class will have access to both the `logger` and `http`
 By default -- and in all of the examples shown so far -- your dependencies are private by default when injected but you can make them public or protected. Here's a quick guide:
 
 * `include Import[:logger]`: Injects a _private_ logger dependency.
-* `include Import.protected(logger)`: Injects a _protected_ logger dependency. Useful with inheritance and a subclass needs access to the dependency.
+* `include Import.protected(logger)`: Injects a _protected_ logger dependency. Useful with inheritance and a subclass that needs access to the dependency.
 * `include Import.public(:logger)`: Injects a _public_ logger dependency.
 
 There is no `+#private+` method since `#[]` does this for you and is _recommended practice_. Use of `+#public+` and `+#protected+` should be used sparingly or not at all if you can avoid it. Here's an example where public, protected, and private dependencies are injected:
@@ -357,7 +357,7 @@ Demo.new.call
 
 As you can see, with the _private_ `#infused_keys` attribute reader, we are able to iterate through each infused key and send the `#call` message to each injected dependency.
 
-Since `#infused_keys` is a private attribute reader, this means the infused keys are private to each instance. This includes all ancestors when using inheritance as each parent class in the hierarchy will have it's own unique array of infused jk depending on what was injected for that object.
+Since `#infused_keys` is a private attribute reader, this means the infused keys are private to each instance. This includes all ancestors when using inheritance as each parent class in the hierarchy will have it's own unique array of infused keys depending on what was injected for that object.
 
 All infused keys are frozen by default.
 
@@ -407,7 +407,7 @@ RSpec.describe Action do
 end
 ----
 
-Notice there is little setup required to test the injected dependencies. You only need to use the refinement and define what you want stubbed in your `before` and `after` blocks. That's it!
+Notice there is little setup required to test the injected dependencies. You only need to stub and restore via your `before` and `after` blocks. That's it!
 
 While the above works great for a single spec, over time you'll want to reduce duplicated setup by using a shared context. Here's a rewrite of the above spec which significantly reduces duplication when needing to test multiple objects using the same dependencies:
 

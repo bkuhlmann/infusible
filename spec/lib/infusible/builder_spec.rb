@@ -5,6 +5,26 @@ require "spec_helper"
 RSpec.describe Infusible::Builder do
   before { stub_const "Test::Builder", described_class.new({eins: 1, zwei: 2}, :eins, :zwei) }
 
+  describe ".ancestors" do
+    it "answers ancestors" do
+      implementation = Class.new.include(Test::Builder).set_temporary_name "test"
+
+      expect(implementation.ancestors.map(&:inspect)).to eq(
+        [
+          "test",
+          "infusible-parent",
+          "Test::Builder",
+          "Object",
+          "PP::ObjectMixin",
+          "JSON::Ext::Generator::GeneratorMethods::Object",
+          "DEBUGGER__::TrapInterceptor",
+          "Kernel",
+          "BasicObject"
+        ]
+      )
+    end
+  end
+
   describe "#initialize" do
     it "is frozen" do
       builder = described_class.new({eins: 1})

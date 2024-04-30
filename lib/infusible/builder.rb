@@ -29,6 +29,8 @@ module Infusible
       @scope = scope
       @class_module = Class.new(Module).new
       @instance_module = Class.new(Module).new
+
+      freeze
     end
 
     def included descendant

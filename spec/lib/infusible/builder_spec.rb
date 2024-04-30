@@ -5,6 +5,13 @@ require "spec_helper"
 RSpec.describe Infusible::Builder do
   before { stub_const "Test::Builder", described_class.new({eins: 1, zwei: 2}, :eins, :zwei) }
 
+  describe "#initialize" do
+    it "is frozen" do
+      builder = described_class.new({eins: 1})
+      expect(builder.frozen?).to be(true)
+    end
+  end
+
   describe "#included" do
     it "fails with type error when infusing a module" do
       expectation = proc { Module.new { include Test::Builder } }

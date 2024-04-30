@@ -1,10 +1,10 @@
 cff-version: 1.2.0
 message: Please use the following metadata when citing this project in your work.
 title: Infusible
-abstract: An automated dependency manager and injector.
-version: 3.6.0
+abstract: An automatic dependency injector.
+version: 3.7.0
 license: Hippocratic-2.1
-date-released: 2024-04-21
+date-released: 2024-04-30
 authors:
   - family-names: Kuhlmann
     given-names: Brooke

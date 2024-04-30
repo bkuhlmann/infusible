@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |spec|
   spec.name = "infusible"
-  spec.version = "3.6.0"
+  spec.version = "3.7.0"
   spec.authors = ["Brooke Kuhlmann"]
   spec.email = ["brooke@alchemists.io"]
   spec.homepage = "https://alchemists.io/projects/infusible"
-  spec.summary = "An automated dependency manager and injector."
+  spec.summary = "An automatic dependency injector."
   spec.license = "Hippocratic-2.1"
 
   spec.metadata = {

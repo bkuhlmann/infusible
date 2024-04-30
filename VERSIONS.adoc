@@ -1,5 +1,12 @@
 = Versions
 
+== 3.7.0 (2024-04-30)
+
+* ✅ Fixed builder ancestry - Brooke Kuhlmann
+* 🔼 Updated builder to be frozen by default - Brooke Kuhlmann
+* 🔼 Updated constructor as builder - Brooke Kuhlmann
+* 🔼 Updated to Ruby 3.3.1 - Brooke Kuhlmann
+
 == 3.6.0 (2024-04-21)
 
 * 🔼 Updated to Git Lint 7.3.0 - Brooke Kuhlmann

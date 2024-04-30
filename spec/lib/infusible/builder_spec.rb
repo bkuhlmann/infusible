@@ -2,12 +2,12 @@
 
 require "spec_helper"
 
-RSpec.describe Infusible::Constructor do
-  before { stub_const "Test::Constructor", described_class.new({eins: 1, zwei: 2}, :eins, :zwei) }
+RSpec.describe Infusible::Builder do
+  before { stub_const "Test::Builder", described_class.new({eins: 1, zwei: 2}, :eins, :zwei) }
 
   describe "#included" do
     it "fails with type error when infusing a module" do
-      expectation = proc { Module.new { include Test::Constructor } }
+      expectation = proc { Module.new { include Test::Builder } }
 
       expect(&expectation).to raise_error(
         TypeError,
@@ -18,7 +18,7 @@ RSpec.describe Infusible::Constructor do
     context "with names only" do
       let :child do
         Class.new do
-          include Test::Constructor
+          include Test::Builder
 
           def frozen_infused_keys? = infused_keys.frozen?
 
@@ -142,7 +142,7 @@ RSpec.describe Infusible::Constructor do
     context "with all possible parameters" do
       let :child do
         Class.new do
-          include Test::Constructor
+          include Test::Builder
 
           def initialize one, two = "two", *three, four:, five: 5, **, &six
             super(**)
@@ -193,7 +193,7 @@ RSpec.describe Infusible::Constructor do
 
       let :child do
         Class.new parent do
-          include Test::Constructor
+          include Test::Builder
 
           def initialize one, two = "two", *three, four:, five: 5, **, &seven
             super
@@ -224,7 +224,7 @@ RSpec.describe Infusible::Constructor do
         end
       end
 
-      let(:child) { Class.new(parent).include Test::Constructor }
+      let(:child) { Class.new(parent).include Test::Builder }
 
       it "includes injected dependencies plus parent instance variable" do
         expect(child.new.inspect).to include("@eins=1, @zwei=2, @obscured=:obscured")
@@ -244,7 +244,7 @@ RSpec.describe Infusible::Constructor do
         end
       end
 
-      let(:child) { Class.new(parent).include Test::Constructor }
+      let(:child) { Class.new(parent).include Test::Builder }
 
       it "includes injected dependencies plus child to parent dependency" do
         expect(child.new(:other).inspect).to include("@eins=1, @zwei=2, @other=:other")
@@ -264,7 +264,7 @@ RSpec.describe Infusible::Constructor do
         end
       end
 
-      let(:child) { Class.new(parent).include Test::Constructor }
+      let(:child) { Class.new(parent).include Test::Builder }
 
       it "includes injected dependencies plus splatted dependencies from child" do
         instance = child.new :one, :two
@@ -289,7 +289,7 @@ RSpec.describe Infusible::Constructor do
         end
       end
 
-      let(:child) { Class.new(parent).include Test::Constructor }
+      let(:child) { Class.new(parent).include Test::Builder }
 
       it "includes matched overridden dependency and keyword splat" do
         instance = child.new eins: :one, zwei: 2, c: 3
@@ -303,7 +303,7 @@ RSpec.describe Infusible::Constructor do
 
         Class.new do
           include mod
-          include Test::Constructor
+          include Test::Builder
         end
       end
 
@@ -318,7 +318,7 @@ RSpec.describe Infusible::Constructor do
 
         Class.new do
           include mod
-          include Test::Constructor
+          include Test::Builder
         end
       end
 
@@ -333,7 +333,7 @@ RSpec.describe Infusible::Constructor do
 
         Class.new do
           include mod
-          include Test::Constructor
+          include Test::Builder
         end
       end
 
@@ -344,7 +344,7 @@ RSpec.describe Infusible::Constructor do
 
     context "with inheritance and parent injections only" do
       let(:parent) { Class.new.include described_class.new({a: 1, b: 2}, :a, :b) }
-      let(:child) { Class.new(parent).include Test::Constructor }
+      let(:child) { Class.new(parent).include Test::Builder }
 
       it "includes parent infused keys only" do
         expect(parent.new.inspect).to include("@infused_keys=[:a, :b]")

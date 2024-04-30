@@ -7,9 +7,9 @@ detectors:
     enabled: false
   NestedIterators:
     exclude:
-      - "Infusible::Constructor#define_initialize_with_keywords"
-      - "Infusible::Constructor#define_initialize_with_positionals"
-      - "Infusible::Constructor#define_new"
+      - "Infusible::Builder#define_initialize_with_keywords"
+      - "Infusible::Builder#define_initialize_with_positionals"
+      - "Infusible::Builder#define_new"
 
 directories:
   "spec/lib/infusible":

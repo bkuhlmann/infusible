@@ -3,7 +3,7 @@
 module Infusible
   # Associates the container with the constructor for actualization.
   class Actuator
-    def initialize container, constructor: Infusible::Constructor
+    def initialize container, constructor: Infusible::Builder
       @container = container
       @constructor = constructor
     end

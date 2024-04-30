@@ -5,7 +5,7 @@ require "marameters"
 module Infusible
   # Provides the automatic and complete resolution of all injected dependencies.
   # :reek:TooManyInstanceVariables
-  class Constructor < Module
+  class Builder < Module
     def self.define_instance_variables target, keys, keywords
       unless target.instance_variable_defined? :@infused_keys
         target.instance_variable_set :@infused_names, keys

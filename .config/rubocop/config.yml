@@ -3,11 +3,11 @@ inherit_gem:
 
 Lint/UselessMethodDefinition:
   Exclude:
-    - "spec/lib/infusible/constructor_spec.rb"
+    - "spec/lib/infusible/builder_spec.rb"
 
 Metrics/ParameterLists:
   Exclude:
-    - "spec/lib/infusible/constructor_spec.rb"
+    - "spec/lib/infusible/builder_spec.rb"
 
 Naming/VariableNumber:
   Exclude:

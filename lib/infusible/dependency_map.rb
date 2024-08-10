@@ -30,7 +30,7 @@ module Infusible
 
       return key if key && key.match?(patterns.fetch(:valid))
 
-      fail(Errors::InvalidDependency.new(identifier:))
+      fail Errors::InvalidDependency.new(identifier:)
     end
 
     def add key, identifier
@@ -38,7 +38,7 @@ module Infusible
 
       return collection[key] = identifier unless collection.key? key
 
-      fail Errors::DuplicateDependency.new key:, identifier:
+      fail Errors::DuplicateDependency.new(key:, identifier:)
     end
   end
 end

@@ -1,21 +1,21 @@
 # frozen_string_literal: true
 
 module Infusible
-  # Associates the container with the constructor for actualization.
+  # Associates the container with the builder for actualization.
   class Actuator
-    def initialize container, constructor: Infusible::Builder
+    def initialize container, builder: Infusible::Builder
       @container = container
-      @constructor = constructor
+      @builder = builder
     end
 
-    def [](*configuration) = constructor.new container, *configuration
+    def [](*configuration) = builder.new container, *configuration
 
-    def public(*configuration) = constructor.new container, *configuration, scope: __method__
+    def public(*configuration) = builder.new container, *configuration, scope: __method__
 
-    def protected(*configuration) = constructor.new container, *configuration, scope: __method__
+    def protected(*configuration) = builder.new container, *configuration, scope: __method__
 
     private
 
-    attr_reader :container, :constructor
+    attr_reader :container, :builder
   end
 end

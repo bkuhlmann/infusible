@@ -8,7 +8,6 @@ module Infusible
   class Builder < Module
     def self.define_instance_variables target, keys, keywords
       unless target.instance_variable_defined? :@infused_keys
-        target.instance_variable_set :@infused_names, keys
         target.instance_variable_set :@infused_keys, keys
       end
 
@@ -107,13 +106,6 @@ module Infusible
 
       instance_module.module_eval <<-READERS, __FILE__, __LINE__ + 1
         attr_reader :infused_keys
-
-        def infused_names
-          warn "`Inusible#infused_names` is deprecated, use `#infused_keys` instead.",
-               category: :deprecated
-          @infused_names
-        end
-
         #{computed_scope} attr_reader #{methods.join ", "}
       READERS
     end

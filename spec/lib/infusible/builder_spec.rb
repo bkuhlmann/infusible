@@ -42,32 +42,19 @@ RSpec.describe Infusible::Builder do
       )
     end
 
-    context "with names only" do
+    context "with keys only" do
       let :child do
         Class.new do
           include Test::Builder
 
           def frozen_infused_keys? = infused_keys.frozen?
 
-          def frozen_infused_names? = infused_names.frozen?
-
-          def to_a = infused_names.map { |key| __send__ key }
+          def to_a = infused_keys.map { |key| __send__ key }
         end
       end
 
-      it "has frozen infused names only" do
-        expect(child.new.frozen_infused_names?).to be(true)
-      end
-
-      it "answers dependencies based on infused names" do
+      it "answers dependencies based on infused keys" do
         expect(child.new.to_a).to eq([1, 2])
-      end
-
-      it "shows deprecation warning for infused names" do
-        expectation = proc { child.new.frozen_infused_names? }
-        warning = "`Inusible#infused_names` is deprecated, use `#infused_keys` instead.\n"
-
-        expect(&expectation).to output(warning).to_stderr
       end
 
       it "has frozen infused keys only" do

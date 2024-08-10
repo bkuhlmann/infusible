@@ -19,7 +19,6 @@ end
 
 group :test do
   gem "containable", "~> 0.2"
-  gem "dry-container", "~> 0.11"
   gem "rspec", "~> 3.13"
 end
 

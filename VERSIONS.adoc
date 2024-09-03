@@ -1,5 +1,12 @@
 = Versions
 
+== 3.10.1 (2024-09-03)
+
+* 🟢 Added README Developer Certificate of Origin documentation - Brooke Kuhlmann
+* 🔼 Updated gem specification documentation URI as homepage URI - Brooke Kuhlmann
+* 🔼 Updated gem specification to support Ruby 3.4.0 - Brooke Kuhlmann
+* 🔼 Updated to Ruby 3.3.5 - Brooke Kuhlmann
+
 == 3.10.0 (2024-08-17)
 
 * ✅ Fixed dependency map fail syntax - Brooke Kuhlmann

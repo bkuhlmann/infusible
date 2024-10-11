@@ -27,8 +27,8 @@ module Infusible
       @container = container
       @dependencies = DependencyMap.new(*configuration)
       @scope = scope
-      @class_module = Class.new(Module).new
-      @instance_module = Class.new(Module).new.set_temporary_name "infusible-parent"
+      @class_module = Module.new
+      @instance_module = Module.new.set_temporary_name "infusible-parent"
 
       freeze
     end

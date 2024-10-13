@@ -86,7 +86,7 @@ module Infusible
           if super_parameters.only_single_splats?
             super(*positionals, **keywords, &block)
           else
-            super(*positionals, **super_parameters.keyword_slice(keywords, keys:), &block)
+            super(*positionals, **super_parameters.keywords_for(*keys, **keywords), &block)
           end
         end
       end
@@ -96,7 +96,7 @@ module Infusible
       instance_module.module_exec dependencies.keys, variablizer do |keys, definer|
         define_method :initialize do |**keywords, &block|
           definer.call self, keys, keywords
-          super(**super_parameters.keyword_slice(keywords, keys:), &block)
+          super(**super_parameters.keywords_for(*keys, **keywords), &block)
         end
       end
     end

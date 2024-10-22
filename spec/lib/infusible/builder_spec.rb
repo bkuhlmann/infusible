@@ -12,7 +12,7 @@ RSpec.describe Infusible::Builder do
       expect(implementation.ancestors.map(&:inspect)).to eq(
         [
           "test",
-          "infusible-parent",
+          "infusible",
           "Test::Builder",
           "Object",
           "PP::ObjectMixin",

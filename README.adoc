@@ -14,10 +14,10 @@ When coupled with {dependency_injection_containers_link}, as provided by the {co
 
 [source,ruby]
 ----
-Import = Infusible[a: 1, b: 2, c: 3]
+Dependencies = Infusible[a: 1, b: 2, c: 3]
 
 class Demo
-  include Import[:a, :b, :c]
+  include Dependencies[:a, :b, :c]
 
   def to_s = "My injected dependencies are: #{a}, #{b}, and #{c}."
 end
@@ -80,10 +80,10 @@ There is basic and advanced usage. We'll start with the basics and work our to m
 This gem requires three steps for proper use:
 
 . A container.
-. An import constant.
+. A dependencies constant.
 . An object and/or multiple objects for dependencies to be injected into.
 
-Let's walk through each staring by defining a container of dependencies.
+Let's walk through each by defining a container of dependencies.
 
 ==== Containers
 
@@ -105,25 +105,25 @@ module Container
 end
 ----
 
-==== Imports
+==== Setup
 
-Once your container is defined, you'll want to define the corresponding import for reuse within your application. Defining an import only requires two lines of code:
+Once your container is defined, you'll want to set it up for reuse within your application. This only requires two lines of code:
 
 [source,ruby]
 ----
 require "infusible"
 
-Import = Infusible[Container]
+Dependencies = Infusible[Container]
 ----
 
 ==== Dependencies
 
-With your container and import defined, you can inject your dependencies by including what you need:
+With your container configured for injection, you can inject your dependencies by including what you need:
 
 [source,ruby]
 ----
 class Pinger
-  include Import[:http, :logger]
+  include Dependencies[:http, :logger]
 
   def call url
     http.get(url).status.then { |status| logger.info %(The status of "#{url}" is #{status}.) }
@@ -150,7 +150,7 @@ You can use symbols, strings, or a combination of both when defining which depen
 [source,ruby]
 ----
 class Pinger
-  include Import[:http, "logger"]
+  include Dependencies[:http, "logger"]
 
   def call = puts "Using: #{http.inspect} and #{logger.inspect}."
 end
@@ -163,7 +163,7 @@ To access namespaced dependencies within a container, you only need to provide t
 [source,ruby]
 ----
 class Pinger
-  include Import["primary.http", "primary.logger"]
+  include Dependencies["primary.http", "primary.logger"]
 
   def call = puts "Using: #{http.inspect} and #{logger.inspect}."
 end
@@ -178,7 +178,7 @@ Should you want to rename your namespaced dependencies to something more appropr
 [source,ruby]
 ----
 class Pinger
-  include Import[client: "primary.http"]
+  include Dependencies[client: "primary.http"]
 
   def call = puts "Using: #{client.inspect}."
 end
@@ -191,7 +191,7 @@ You can also mix names, namespaces, and aliases for injection as long as the ali
 [source,ruby]
 ----
 class Pinger
-  include Import[:configuration, "primary.logger", client: :http]
+  include Dependencies[:configuration, "primary.logger", client: :http]
 
   def call = puts "Using: #{configuration.inspect}, #{logger.inspect}, and #{client.inspect}."
 end
@@ -204,7 +204,7 @@ Earlier, when demonstrating basic usage, all dependencies were injected by defau
 [source,ruby]
 ----
 class Pinger
-  include Import[:http, :logger]
+  include Dependencies[:http, :logger]
 end
 ----
 
@@ -213,11 +213,11 @@ end
 [source,ruby]
 ----
 class Downloader
-  include Import[:http]
+  include Dependencies[:http]
 end
 ----
 
-This allows you to reuse `Import` in as many situations as makes sense while improving performance.
+This allows you to reuse `Dependencies` in as many situations as makes sense while improving performance.
 
 ==== Custom Initialization
 
@@ -226,7 +226,7 @@ Should you want to use injection in combination with your own initializer, you'l
 [source,ruby]
 ----
 class Pinger
-  include Import[:logger]
+  include Dependencies[:logger]
 
   def initialize(http: HTTP, **)
     super(**)
@@ -258,7 +258,7 @@ class Parent
 end
 
 class Child < Parent
-  include Import[:logger]
+  include Dependencies[:logger]
 end
 ----
 
@@ -267,11 +267,11 @@ In the above situation, the child's logger will be the logger that is injected w
 [source,ruby]
 ----
 class Parent
-  include GeneralImport[:logger]
+  include GeneralDependencies[:logger]
 end
 
 class Child < Parent
-  include Import[:logger]
+  include Dependencies[:logger]
 end
 ----
 
@@ -280,25 +280,25 @@ Once again, the child's logger will take precedence over the what is provided by
 [source,ruby]
 ----
 class Parent
-  include Import[:logger]
+  include Dependencies[:logger]
 end
 
 class Child < Parent
-  include Import[:http]
+  include Dependencies[:http]
 end
 ----
 
 With the above, the child class will have access to both the `logger` and `http` dependencies.
 
-⚠️ Be careful when using parent dependencies within your child classes since they are _private by default_. Even though you can reach them, they might change, which can break your downstream dependencies and probably should be avoided or at least defined as `protected` by your parent objects in order to avoid breaking the parent/child relationship.
+⚠️ Be careful when using parent dependencies within your child classes since they are _private by default_. Even though you can reach them, they might change, which can break downstream dependencies and should be avoided. To prevent this, use `protected` injection via your parent objects in order to avoid breaking the parent/child relationship (this is explained further below).
 
 ==== Scopes
 
 By default -- and in all of the examples shown so far -- your dependencies are private by default when injected but you can make them public or protected. Here's a quick guide:
 
-* `include Import[:logger]`: Injects a _private_ logger dependency.
-* `include Import.protected(logger)`: Injects a _protected_ logger dependency. Useful with inheritance and a subclass that needs access to the dependency.
-* `include Import.public(:logger)`: Injects a _public_ logger dependency.
+* `include Dependencies[:logger]`: Injects a _private_ logger dependency.
+* `include Dependencies.protected(logger)`: Injects a _protected_ logger dependency. Useful with inheritance and a subclass that needs access to the dependency.
+* `include Dependencies.public(:logger)`: Injects a _public_ logger dependency.
 
 There is no `+#private+` method since `#[]` does this for you and is _recommended practice_. Use of `+#public+` and `+#protected+` should be used sparingly or not at all if you can avoid it. Here's an example where public, protected, and private dependencies are injected:
 
@@ -312,12 +312,12 @@ module Container
   register :three, "Three"
 end
 
-Import = Infusible[Container]
+Dependencies = Infusible[Container]
 
 class Demo
-  include Import.public(:one)
-  include Import.protected(:two)
-  include Import[:three]
+  include Dependencies.public(:one)
+  include Dependencies.protected(:two)
+  include Dependencies[:three]
 end
 
 demo = Demo.new
@@ -342,10 +342,10 @@ module Container
   register :two, "Two"
 end
 
-Import = Infusible[Container]
+Dependencies = Infusible[Container]
 
 class Demo
-  include Import[:one, :two]
+  include Dependencies[:one, :two]
 
   def call = infused_keys.each { |key| puts __send__(key) }
 end
@@ -359,7 +359,7 @@ As you can see, with the _private_ `#infused_keys` attribute reader, we are able
 
 Since `#infused_keys` is a private attribute reader, this means the infused keys are private to each instance. This includes all ancestors when using inheritance as each parent class in the hierarchy will have it's own unique array of infused keys depending on what was injected for that object.
 
-All infused keys are frozen by default.
+All infused keys are frozen by default as well.
 
 === Tests
 
@@ -375,11 +375,11 @@ module Container
 end
 
 # Our import which defines our container for potential injection.
-Import = Infusible[Container]
+Dependencies = Infusible[Container]
 
 # Our action class which injects our kernel dependency from our container.
 class Action
-  include Import[:kernel]
+  include Dependencies[:kernel]
 
   def call = kernel.puts "This is a test."
 end
@@ -487,7 +487,7 @@ When you use this gem all of the construction, initialization, and setting of pr
 [source,ruby]
 ----
 class Pinger
-  include Import[:http, :logger]
+  include Dependencies[:http, :logger]
 
   def call url
     http.get(url).status.then { |status| logger.info %(The status of "#{url}" is #{status}.) }
@@ -503,9 +503,9 @@ When using this gem, along with a container like {containable_link}, make sure t
 
 * Use containers to group related dependencies that make logical sense for the namespace you are working in and avoid using containers as a junk drawer for throwing random objects in.
 * Use containers that don't have a lot of registered dependencies. If you register too many dependencies, that means your objects are too complex and need to be simplified further.
-* Use the `Import` constant to define _what_ is possible to import much like you'd use a `Container` to define your dependencies. Defining what is importable improves performance and should be defined in separate files for improved fuzzy file finding.
+* Use the `Dependencies` constant to define _what_ is possible to inject much like you'd use a `Container` to define your dependencies. Defining what is importable improves performance and should be defined in separate files for improved fuzzy file finding.
 * Use `**` to forward keyword arguments when defining an initializer which needs to pass injected dependencies upwards.
-* Prefer `Import#[]` over the use of `Import#public` and/or `Import#protected` as much as a possible since injected dependencies should be private, by default, in order to not break encapsulation. That said, there are times where making them public and/or protected can save you from writing boilerplate code.
+* Prefer `Dependencies#[]` over the use of `Dependencies#public` and/or `Dependencies#protected` as much as a possible since injected dependencies should be private, by default, in order to not break encapsulation. That said, there are times where making them public and/or protected can save you from writing boilerplate code.
 
 == Tests
 

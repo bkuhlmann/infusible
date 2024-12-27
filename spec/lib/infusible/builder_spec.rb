@@ -284,7 +284,7 @@ RSpec.describe Infusible::Builder do
         instance = child.new :one, :two
 
         expect(instance.inspect).to include(
-          "@eins=1, @zwei=2, @any=[:one, :two, {:eins=>1, :zwei=>2}]"
+          "@eins=1, @zwei=2, @any=[:one, :two, {eins: 1, zwei: 2}]"
         )
       end
     end
@@ -307,7 +307,7 @@ RSpec.describe Infusible::Builder do
 
       it "includes matched overridden dependency and keyword splat" do
         instance = child.new eins: :one, zwei: 2, c: 3
-        expect(instance.inspect).to include("@eins=:one, @zwei=2, @first=:one, @rest={:c=>3}")
+        expect(instance.inspect).to include("@eins=:one, @zwei=2, @first=:one, @rest={c: 3}")
       end
     end
 

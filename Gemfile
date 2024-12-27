@@ -18,7 +18,7 @@ group :development do
 end
 
 group :test do
-  gem "containable", "~> 0.2"
+  gem "containable", "~> 1.0"
   gem "rspec", "~> 3.13"
 end
 

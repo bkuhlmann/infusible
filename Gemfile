@@ -8,7 +8,7 @@ gemspec
 
 group :quality do
   gem "caliber", "~> 0.82"
-  # gem "git-lint", "~> 9.0"
+  gem "git-lint", "~> 10.0"
   gem "reek", "~> 6.5", require: false
   gem "simplecov", "~> 0.22", require: false
 end
@@ -18,7 +18,7 @@ group :development do
 end
 
 group :test do
-  gem "containable", "~> 1.1"
+  gem "containable", "~> 2.0"
   gem "rspec", "~> 3.13"
 end
 

@@ -45,7 +45,7 @@ RSpec.describe Infusible::DependencyMap do
     end
 
     context "with aliases" do
-      let(:configuration) { [a: "space.sun", b: "space.moon"] }
+      let(:configuration) { [{a: "space.sun", b: "space.moon"}] }
 
       it "answers aliased keys with original values" do
         expect(dependency_map.to_h).to eq(a: "space.sun", b: "space.moon")

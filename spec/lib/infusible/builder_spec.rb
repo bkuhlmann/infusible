@@ -16,7 +16,7 @@ RSpec.describe Infusible::Builder do
           "Test::Builder",
           "Object",
           "PP::ObjectMixin",
-          "JSON::Ext::Generator::GeneratorMethods::Object",
+          "JSON::GeneratorMethods",
           "DEBUGGER__::TrapInterceptor",
           "Kernel",
           "BasicObject"

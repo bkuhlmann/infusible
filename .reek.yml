@@ -10,6 +10,8 @@ detectors:
       - "Infusible::Builder#define_initialize_with_keywords"
       - "Infusible::Builder#define_initialize_with_positionals"
       - "Infusible::Builder#define_new"
+  UnusedParameters:
+    enabled: false
 
 directories:
   "spec/lib/infusible":

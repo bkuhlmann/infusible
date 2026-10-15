@@ -12,8 +12,3 @@ detectors:
       - "Infusible::Builder#define_new"
   UnusedParameters:
     enabled: false
-
-directories:
-  "spec/lib/infusible":
-    LongParameterList:
-      enabled: false
